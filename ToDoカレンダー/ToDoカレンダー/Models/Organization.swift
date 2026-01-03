@@ -24,7 +24,7 @@ class TaskFolder {
     // 並び順
     var sortOrder: Int = 0
 
-    // テンプレートかどうか（タグ管理画面で作成 = true、タスク作成時に作成 = false）
+    // テンプレートタグかどうか（タグ管理画面で作成 = true、タスク編集時に作成 = false）
     var isTemplate: Bool = false
 
     // フォルダ削除時は、中のタスクを「未分類」にする

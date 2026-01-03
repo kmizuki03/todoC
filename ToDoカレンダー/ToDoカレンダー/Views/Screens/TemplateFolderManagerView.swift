@@ -56,7 +56,7 @@ struct TemplateFolderManagerView: View {
                                     startEditing(folder: folder)
                                 }
                         }
-                        .onDelete(perform: hideFolders)
+                        .onDelete(perform: deleteFolders)
                         .onMove(perform: moveFolders)
                     }
 
@@ -172,11 +172,11 @@ struct TemplateFolderManagerView: View {
         isEditingFolder = false
     }
 
-    // 削除ではなく非表示にする（既存タスクのタグは維持）
-    private func hideFolders(at offsets: IndexSet) {
+    // 実際に削除（既存タスクはバックアップタグ情報で表示継続）
+    private func deleteFolders(at offsets: IndexSet) {
         withAnimation {
             for index in offsets {
-                allFolders[index].isTemplate = false
+                modelContext.delete(allFolders[index])
             }
         }
     }

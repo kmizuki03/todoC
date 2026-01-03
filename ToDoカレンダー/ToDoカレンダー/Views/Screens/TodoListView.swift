@@ -13,7 +13,7 @@ struct TodoListView: View {
     @Query private var items: [TodoItem]
 
     @State private var editingItem: TodoItem?
-    @State private var collapsedFolderIDs: Set<PersistentIdentifier> = []
+    @State private var collapsedTagNames: Set<String> = []
 
     @State private var folderToRename: TaskFolder?
     @State private var isShowingRenameAlert = false
@@ -37,10 +37,10 @@ struct TodoListView: View {
             ContentUnavailableView("タスクなし", systemImage: "checklist")
         } else {
             List {
-                // タグごとのセクション
+                // 現存するタグごとのセクション
                 ForEach(uniqueFolders) { folder in
                     Section(header: FolderHeader(folder: folder)) {
-                        if !collapsedFolderIDs.contains(folder.persistentModelID) {
+                        if !collapsedTagNames.contains(folder.name) {
                             let tasksInFolder = items.filter { $0.folder == folder }
 
                             ForEach(tasksInFolder) { item in
@@ -51,10 +51,24 @@ struct TodoListView: View {
                     }
                 }
 
+                // 削除されたタグ（バックアップ情報で表示）
+                ForEach(orphanedTagNames, id: \.self) { tagName in
+                    Section(header: OrphanedTagHeader(tagName: tagName)) {
+                        if !collapsedTagNames.contains(tagName) {
+                            let tasksWithTag = items.filter { $0.folder == nil && $0.tagName == tagName }
+
+                            ForEach(tasksWithTag) { item in
+                                rowView(for: item)
+                            }
+                            .onDelete { indexSet in deleteItems(at: indexSet, source: tasksWithTag) }
+                        }
+                    }
+                }
+
                 // 未分類のセクション
                 if hasUncategorizedItems {
                     Section(header: Text("未分類").foregroundColor(.secondary)) {
-                        let uncategorizedTasks = items.filter { $0.folder == nil }
+                        let uncategorizedTasks = items.filter { $0.folder == nil && $0.tagName == nil }
                         ForEach(uncategorizedTasks) { item in
                             rowView(for: item)
                         }
@@ -83,12 +97,12 @@ struct TodoListView: View {
                 }
                 Button("キャンセル", role: .cancel) {}
             } message: {
-                Text("このタグ内のタスクは「未分類」になります。")
+                Text("タグは削除されますが、タスクのタグ表示は維持されます。")
             }
         }
     }
 
-    // MARK: - タグヘッダー
+    // MARK: - 現存するタグヘッダー
     private func FolderHeader(folder: TaskFolder) -> some View {
         HStack(spacing: 8) {
             Image(systemName: folder.iconName ?? "tag.fill")
@@ -103,17 +117,17 @@ struct TodoListView: View {
             Spacer()
 
             Image(systemName: "chevron.right")
-                .rotationEffect(.degrees(collapsedFolderIDs.contains(folder.persistentModelID) ? 0 : 90))
+                .rotationEffect(.degrees(collapsedTagNames.contains(folder.name) ? 0 : 90))
                 .foregroundColor(.gray)
-                .animation(.easeInOut(duration: 0.2), value: collapsedFolderIDs.contains(folder.persistentModelID))
+                .animation(.easeInOut(duration: 0.2), value: collapsedTagNames.contains(folder.name))
         }
         .contentShape(Rectangle())
         .onTapGesture {
             withAnimation {
-                if collapsedFolderIDs.contains(folder.persistentModelID) {
-                    collapsedFolderIDs.remove(folder.persistentModelID)
+                if collapsedTagNames.contains(folder.name) {
+                    collapsedTagNames.remove(folder.name)
                 } else {
-                    collapsedFolderIDs.insert(folder.persistentModelID)
+                    collapsedTagNames.insert(folder.name)
                 }
             }
         }
@@ -135,12 +149,50 @@ struct TodoListView: View {
         }
     }
 
+    // MARK: - 削除されたタグのヘッダー（バックアップ情報で表示）
+    private func OrphanedTagHeader(tagName: String) -> some View {
+        let sampleItem = items.first { $0.folder == nil && $0.tagName == tagName }
+
+        return HStack(spacing: 8) {
+            Image(systemName: sampleItem?.displayTagIcon ?? "tag.fill")
+                .foregroundColor(sampleItem?.displayTagColor ?? .gray)
+                .font(.headline)
+
+            Text(tagName)
+                .font(.headline)
+                .foregroundColor(.primary)
+                .textCase(nil)
+
+            // 削除済みマーク
+            Text("(削除済み)")
+                .font(.caption2)
+                .foregroundColor(.secondary)
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .rotationEffect(.degrees(collapsedTagNames.contains(tagName) ? 0 : 90))
+                .foregroundColor(.gray)
+                .animation(.easeInOut(duration: 0.2), value: collapsedTagNames.contains(tagName))
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            withAnimation {
+                if collapsedTagNames.contains(tagName) {
+                    collapsedTagNames.remove(tagName)
+                } else {
+                    collapsedTagNames.insert(tagName)
+                }
+            }
+        }
+    }
+
     // MARK: - タスク行表示
     private func rowView(for item: TodoItem) -> some View {
         HStack {
             Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
                 .font(.title2)
-                .foregroundColor(item.isCompleted ? .green : (item.folder?.color ?? .gray))
+                .foregroundColor(item.isCompleted ? .green : item.displayTagColor)
                 .onTapGesture { withAnimation { item.isCompleted.toggle() } }
 
             VStack(alignment: .leading, spacing: 4) {
@@ -181,8 +233,16 @@ struct TodoListView: View {
         return Array(unique).sorted { $0.sortOrder < $1.sortOrder }
     }
 
+    // 削除されたタグのタグ名一覧（folder == nil だけど tagName がある）
+    private var orphanedTagNames: [String] {
+        let names = items
+            .filter { $0.folder == nil && $0.tagName != nil }
+            .compactMap { $0.tagName }
+        return Array(Set(names)).sorted()
+    }
+
     private var hasUncategorizedItems: Bool {
-        items.contains { $0.folder == nil }
+        items.contains { $0.folder == nil && $0.tagName == nil }
     }
 
     private func deleteItems(at offsets: IndexSet, source: [TodoItem]) {
