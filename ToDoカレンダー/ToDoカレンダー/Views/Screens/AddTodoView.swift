@@ -49,7 +49,7 @@ struct AddTodoView: View {
         _allItems = Query(filter: itemPredicate)
     }
 
-    /// 選択可能なタグ: テンプレートタグ + その日に使用されたタグ
+    /// 選択可能なタグ: テンプレートタグ + その日に使用されたタグ + 現在選択中のタグ
     private var availableFolders: [TaskFolder] {
         let calendar = Calendar.current
         let startOfDay = calendar.startOfDay(for: selectedDate)
@@ -62,9 +62,14 @@ struct AddTodoView: View {
                 .compactMap { $0.folder?.persistentModelID }
         )
 
-        // テンプレートタグ OR その日に使用されたタグ
+        // 現在選択中のタグのID
+        let currentFolderID = selectedFolder?.persistentModelID
+
+        // テンプレートタグ OR その日に使用されたタグ OR 現在選択中のタグ
         return allFolders.filter { folder in
-            folder.isTemplate || usedFolderIDs.contains(folder.persistentModelID)
+            folder.isTemplate ||
+            usedFolderIDs.contains(folder.persistentModelID) ||
+            folder.persistentModelID == currentFolderID
         }
     }
 
