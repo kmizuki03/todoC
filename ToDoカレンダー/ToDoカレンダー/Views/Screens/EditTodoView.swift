@@ -163,14 +163,14 @@ struct EditTodoView: View {
                 if folder.date == nil {
                     HStack(spacing: 4) {
                         Image(systemName: "doc.on.doc")
-                        Text("テンプレート")
+                        Text("\(folder.name) テンプレート")
                     }
                     .font(.caption2)
                     .foregroundColor(.orange)
-                } else if folder.templateFolder != nil {
+                } else if let template = folder.templateFolder {
                     HStack(spacing: 4) {
                         Image(systemName: "link")
-                        Text("テンプレートから生成")
+                        Text("\(template.name) から生成")
                     }
                     .font(.caption2)
                     .foregroundColor(.secondary)
