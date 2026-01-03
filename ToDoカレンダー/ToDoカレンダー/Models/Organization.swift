@@ -24,15 +24,19 @@ class TaskFolder {
     // 並び順
     var sortOrder: Int = 0
 
+    // テンプレートかどうか（タグ管理画面で作成 = true、タスク作成時に作成 = false）
+    var isTemplate: Bool = false
+
     // フォルダ削除時は、中のタスクを「未分類」にする
     @Relationship(deleteRule: .nullify) var items: [TodoItem] = []
 
-    init(name: String, calendar: AppCalendar? = nil, colorName: String? = nil, iconName: String? = nil, sortOrder: Int = 0) {
+    init(name: String, calendar: AppCalendar? = nil, colorName: String? = nil, iconName: String? = nil, sortOrder: Int = 0, isTemplate: Bool = false) {
         self.name = name
         self.calendar = calendar
         self.colorName = colorName
         self.iconName = iconName
         self.sortOrder = sortOrder
+        self.isTemplate = isTemplate
     }
 
     // カラー名からSwiftUI Colorを取得

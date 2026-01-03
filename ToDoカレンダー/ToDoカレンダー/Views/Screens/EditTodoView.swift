@@ -23,8 +23,9 @@ struct EditTodoView: View {
         _item = Bindable(item)
 
         if let calendarID = item.calendar?.persistentModelID {
+            // テンプレートタグのみ表示
             let predicate = #Predicate<TaskFolder> { folder in
-                folder.calendar?.persistentModelID == calendarID
+                folder.calendar?.persistentModelID == calendarID && folder.isTemplate == true
             }
             _folders = Query(filter: predicate, sort: \.sortOrder)
         } else {

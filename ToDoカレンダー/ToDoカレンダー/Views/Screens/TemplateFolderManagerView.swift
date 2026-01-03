@@ -14,7 +14,8 @@ struct TemplateFolderManagerView: View {
 
     var targetCalendar: AppCalendar
 
-    @Query private var folders: [TaskFolder]
+    // テンプレートタグのみ取得
+    @Query private var allFolders: [TaskFolder]
 
     @State private var isAddingFolder = false
     @State private var newFolderName = ""
@@ -34,27 +35,28 @@ struct TemplateFolderManagerView: View {
         self.targetCalendar = targetCalendar
         let calendarID = targetCalendar.persistentModelID
 
+        // isTemplate == true のタグのみ取得
         let predicate = #Predicate<TaskFolder> { folder in
-            folder.calendar?.persistentModelID == calendarID
+            folder.calendar?.persistentModelID == calendarID && folder.isTemplate == true
         }
-        _folders = Query(filter: predicate, sort: \.sortOrder)
+        _allFolders = Query(filter: predicate, sort: \.sortOrder)
     }
 
     var body: some View {
         NavigationStack {
             List {
                 Section(header: Text("タグ一覧")) {
-                    if folders.isEmpty {
+                    if allFolders.isEmpty {
                         Text("タグがありません").foregroundColor(.secondary)
                     } else {
-                        ForEach(folders) { folder in
+                        ForEach(allFolders) { folder in
                             FolderRow(folder: folder)
                                 .contentShape(Rectangle())
                                 .onTapGesture {
                                     startEditing(folder: folder)
                                 }
                         }
-                        .onDelete(perform: deleteFolders)
+                        .onDelete(perform: hideFolders)
                         .onMove(perform: moveFolders)
                     }
 
@@ -82,7 +84,7 @@ struct TemplateFolderManagerView: View {
                     folderName: $newFolderName,
                     folderColor: $newFolderColor,
                     folderIcon: $newFolderIcon,
-                    existingNames: folders.map { $0.name },
+                    existingNames: allFolders.map { $0.name },
                     onSave: createFolder,
                     onCancel: { isAddingFolder = false }
                 )
@@ -93,7 +95,7 @@ struct TemplateFolderManagerView: View {
                     folderName: $editFolderName,
                     folderColor: $editFolderColor,
                     folderIcon: $editFolderIcon,
-                    existingNames: folders.filter { $0.id != editingFolder?.id }.map { $0.name },
+                    existingNames: allFolders.filter { $0.id != editingFolder?.id }.map { $0.name },
                     onSave: saveEditedFolder,
                     onCancel: { isEditingFolder = false }
                 )
@@ -149,13 +151,14 @@ struct TemplateFolderManagerView: View {
     }
 
     private func createFolder() {
-        let maxOrder = folders.map { $0.sortOrder }.max() ?? 0
+        let maxOrder = allFolders.map { $0.sortOrder }.max() ?? 0
         let newFolder = TaskFolder(
             name: newFolderName,
             calendar: targetCalendar,
             colorName: newFolderColor,
             iconName: newFolderIcon,
-            sortOrder: maxOrder + 1
+            sortOrder: maxOrder + 1,
+            isTemplate: true  // テンプレートとして作成
         )
         modelContext.insert(newFolder)
         isAddingFolder = false
@@ -169,16 +172,17 @@ struct TemplateFolderManagerView: View {
         isEditingFolder = false
     }
 
-    private func deleteFolders(at offsets: IndexSet) {
+    // 削除ではなく非表示にする（既存タスクのタグは維持）
+    private func hideFolders(at offsets: IndexSet) {
         withAnimation {
             for index in offsets {
-                modelContext.delete(folders[index])
+                allFolders[index].isTemplate = false
             }
         }
     }
 
     private func moveFolders(from source: IndexSet, to destination: Int) {
-        var sorted = Array(folders)
+        var sorted = Array(allFolders)
         sorted.move(fromOffsets: source, toOffset: destination)
         for (index, folder) in sorted.enumerated() {
             folder.sortOrder = index

@@ -35,8 +35,9 @@ struct AddTodoView: View {
         self.onSave = onSave
 
         let calendarID = targetCalendar.persistentModelID
+        // テンプレートタグのみ表示
         let predicate = #Predicate<TaskFolder> { folder in
-            folder.calendar?.persistentModelID == calendarID
+            folder.calendar?.persistentModelID == calendarID && folder.isTemplate == true
         }
         _allFolders = Query(filter: predicate, sort: \.sortOrder)
     }
