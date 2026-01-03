@@ -25,12 +25,9 @@ struct AddTodoView: View {
 
     @State private var selectedFolder: TaskFolder?
 
-    // 新規作成用アラート
+    // 新規作成用
     @State private var isShowingNewFolderAlert = false
     @State private var newFolderName = ""
-
-    // 削除確認用アラート
-    @State private var isShowingDeleteAlert = false
 
     init(selectedDate: Date, targetCalendar: AppCalendar, onSave: @escaping (String, Date, Bool, String, TaskFolder?) -> Void) {
         self.selectedDate = selectedDate
@@ -42,23 +39,6 @@ struct AddTodoView: View {
             folder.calendar?.persistentModelID == calendarID
         }
         _allFolders = Query(filter: predicate, sort: \.sortOrder)
-    }
-
-    var availableFolders: [TaskFolder] {
-        let dailyFolders = allFolders.filter { folder in
-            if let d = folder.date {
-                return Calendar.current.isDate(d, inSameDayAs: selectedDate)
-            }
-            return false
-        }
-
-        let templates = allFolders.filter { $0.date == nil }
-
-        let uniqueTemplates = templates.filter { template in
-            !dailyFolders.contains { daily in daily.name == template.name }
-        }
-
-        return (dailyFolders + uniqueTemplates).sorted { $0.sortOrder < $1.sortOrder }
     }
 
     var body: some View {
@@ -77,25 +57,14 @@ struct AddTodoView: View {
                         DatePicker("時間", selection: $time, displayedComponents: .hourAndMinute)
                     }
                 }
-                Section("フォルダ（カテゴリー）") {
+                Section("タグ") {
                     HStack {
-                        Picker("フォルダ", selection: $selectedFolder) {
-                            Text("未選択").tag(nil as TaskFolder?)
-                            ForEach(availableFolders) { folder in
+                        Picker("タグ", selection: $selectedFolder) {
+                            Text("なし").tag(nil as TaskFolder?)
+                            ForEach(allFolders) { folder in
                                 FolderPickerRow(folder: folder)
                                     .tag(folder as TaskFolder?)
                             }
-                        }
-
-                        // 削除ボタン (当日フォルダが選択されている時のみ表示)
-                        if let folder = selectedFolder, folder.date != nil {
-                            Button(action: {
-                                isShowingDeleteAlert = true
-                            }) {
-                                Image(systemName: "trash")
-                                    .foregroundColor(.red)
-                            }
-                            .buttonStyle(BorderlessButtonStyle())
                         }
 
                         // 作成ボタン
@@ -109,7 +78,7 @@ struct AddTodoView: View {
                         .buttonStyle(BorderlessButtonStyle())
                     }
 
-                    // 選択中のフォルダ情報表示
+                    // 選択中のタグ情報表示
                     if let folder = selectedFolder {
                         FolderInfoView(folder: folder)
                     }
@@ -125,22 +94,12 @@ struct AddTodoView: View {
                     .disabled(title.isEmpty)
                 }
             }
-            // 作成アラート
-            .alert("当日限定フォルダを作成", isPresented: $isShowingNewFolderAlert) {
-                TextField("フォルダ名", text: $newFolderName)
+            .alert("新しいタグを作成", isPresented: $isShowingNewFolderAlert) {
+                TextField("タグ名", text: $newFolderName)
                 Button("作成") {
-                    createDailyFolder(name: newFolderName)
+                    createFolder(name: newFolderName)
                 }
                 Button("キャンセル", role: .cancel) {}
-            }
-            // 削除アラート
-            .alert("フォルダを削除", isPresented: $isShowingDeleteAlert) {
-                Button("削除", role: .destructive) {
-                    deleteSelectedFolder()
-                }
-                Button("キャンセル", role: .cancel) {}
-            } message: {
-                Text("このフォルダを削除しますか？\n中身のタスクは「未分類」になります。")
             }
         }
     }
@@ -149,20 +108,10 @@ struct AddTodoView: View {
     @ViewBuilder
     private func FolderPickerRow(folder: TaskFolder) -> some View {
         HStack(spacing: 6) {
-            // アイコン
-            Image(systemName: folder.iconName ?? "folder.fill")
+            Image(systemName: folder.iconName ?? "tag.fill")
                 .foregroundColor(folder.color)
                 .font(.caption)
-
-            // 名前
             Text(folder.name)
-
-            // テンプレートマーク
-            if folder.date == nil {
-                Text("(\(folder.name))")
-                    .foregroundColor(.orange)
-                    .font(.caption2)
-            }
         }
     }
 
@@ -170,92 +119,29 @@ struct AddTodoView: View {
     @ViewBuilder
     private func FolderInfoView(folder: TaskFolder) -> some View {
         HStack {
-            Image(systemName: folder.iconName ?? "folder.fill")
+            Image(systemName: folder.iconName ?? "tag.fill")
                 .foregroundColor(folder.color)
                 .font(.title2)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(folder.name)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-
-                if folder.date == nil {
-                    HStack(spacing: 4) {
-                        Image(systemName: "doc.on.doc")
-                        Text("\(folder.name) - 保存時に当日フォルダが作成されます")
-                    }
-                    .font(.caption2)
-                    .foregroundColor(.orange)
-                } else if let template = folder.templateFolder {
-                    HStack(spacing: 4) {
-                        Image(systemName: "link")
-                        Text("\(template.name) から生成")
-                    }
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-                } else {
-                    HStack(spacing: 4) {
-                        Image(systemName: "calendar")
-                        Text("当日限定フォルダ")
-                    }
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-                }
-            }
+            Text(folder.name)
+                .font(.subheadline)
+                .fontWeight(.medium)
         }
         .padding(.vertical, 4)
     }
 
     // MARK: - Actions
-    private func deleteSelectedFolder() {
-        if let folder = selectedFolder {
-            modelContext.delete(folder)
-            selectedFolder = nil
-        }
-    }
-
     private func saveTask() {
         let finalDate = isTimeSet ? combineDateAndTime(date: selectedDate, time: time) : selectedDate
-        var finalFolder: TaskFolder? = nil
-
-        if let folder = selectedFolder {
-            if folder.date == nil {
-                // テンプレートが選択されている場合
-                let existingDaily = allFolders.first { existing in
-                    guard let d = existing.date else { return false }
-                    return Calendar.current.isDate(d, inSameDayAs: selectedDate) && existing.name == folder.name
-                }
-
-                if let existing = existingDaily {
-                    finalFolder = existing
-                } else {
-                    // 新規作成：テンプレートの属性を継承
-                    let newDailyFolder = TaskFolder(
-                        name: folder.name,
-                        date: selectedDate,
-                        calendar: targetCalendar,
-                        templateFolder: folder,
-                        colorName: folder.colorName,
-                        iconName: folder.iconName,
-                        sortOrder: folder.sortOrder
-                    )
-                    modelContext.insert(newDailyFolder)
-                    finalFolder = newDailyFolder
-                }
-            } else {
-                finalFolder = folder
-            }
-        }
-
-        onSave(title, finalDate, isTimeSet, location, finalFolder)
+        // タグを直接参照（コピーなし）
+        onSave(title, finalDate, isTimeSet, location, selectedFolder)
         dismiss()
     }
 
-    private func createDailyFolder(name: String) {
+    private func createFolder(name: String) {
         let maxOrder = allFolders.map { $0.sortOrder }.max() ?? 0
         let newFolder = TaskFolder(
             name: name,
-            date: selectedDate,
             calendar: targetCalendar,
             sortOrder: maxOrder + 1
         )

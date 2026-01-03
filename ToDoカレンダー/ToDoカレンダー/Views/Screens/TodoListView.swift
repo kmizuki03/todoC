@@ -12,13 +12,9 @@ struct TodoListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [TodoItem]
 
-    // 編集画面表示用
     @State private var editingItem: TodoItem?
-
-    // 折りたたんでいるフォルダのIDリスト
     @State private var collapsedFolderIDs: Set<PersistentIdentifier> = []
 
-    // フォルダ管理用のアラート状態
     @State private var folderToRename: TaskFolder?
     @State private var isShowingRenameAlert = false
     @State private var renameInput = ""
@@ -41,10 +37,9 @@ struct TodoListView: View {
             ContentUnavailableView("タスクなし", systemImage: "checklist")
         } else {
             List {
-                // 1. フォルダごとのセクション（sortOrder順）
+                // タグごとのセクション
                 ForEach(uniqueFolders) { folder in
                     Section(header: FolderHeader(folder: folder)) {
-                        // 折りたたまれていない時だけタスクを表示
                         if !collapsedFolderIDs.contains(folder.persistentModelID) {
                             let tasksInFolder = items.filter { $0.folder == folder }
 
@@ -56,7 +51,7 @@ struct TodoListView: View {
                     }
                 }
 
-                // 2. 未分類のセクション
+                // 未分類のセクション
                 if hasUncategorizedItems {
                     Section(header: Text("未分類").foregroundColor(.secondary)) {
                         let uncategorizedTasks = items.filter { $0.folder == nil }
@@ -71,8 +66,7 @@ struct TodoListView: View {
             .sheet(item: $editingItem) { item in
                 EditTodoView(item: item)
             }
-            // フォルダ名変更アラート
-            .alert("フォルダ名の変更", isPresented: $isShowingRenameAlert) {
+            .alert("タグ名の変更", isPresented: $isShowingRenameAlert) {
                 TextField("新しい名前", text: $renameInput)
                 Button("保存") {
                     if let folder = folderToRename {
@@ -81,8 +75,7 @@ struct TodoListView: View {
                 }
                 Button("キャンセル", role: .cancel) {}
             }
-            // フォルダ削除アラート
-            .alert("フォルダを削除", isPresented: $isShowingDeleteAlert) {
+            .alert("タグを削除", isPresented: $isShowingDeleteAlert) {
                 Button("削除", role: .destructive) {
                     if let folder = folderToDelete {
                         modelContext.delete(folder)
@@ -90,16 +83,15 @@ struct TodoListView: View {
                 }
                 Button("キャンセル", role: .cancel) {}
             } message: {
-                Text("このフォルダ内のタスクは「未分類」になります。")
+                Text("このタグ内のタスクは「未分類」になります。")
             }
         }
     }
 
-    // MARK: - フォルダのヘッダービュー（カラー・アイコン対応）
+    // MARK: - タグヘッダー
     private func FolderHeader(folder: TaskFolder) -> some View {
         HStack(spacing: 8) {
-            // アイコン（カラー付き）
-            Image(systemName: folder.iconName ?? "folder.fill")
+            Image(systemName: folder.iconName ?? "tag.fill")
                 .foregroundColor(folder.color)
                 .font(.headline)
 
@@ -108,16 +100,8 @@ struct TodoListView: View {
                 .foregroundColor(.primary)
                 .textCase(nil)
 
-            // テンプレート由来の場合の表示
-            if folder.templateFolder != nil {
-                Image(systemName: "link")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-            }
-
             Spacer()
 
-            // 開閉アイコン（回転アニメーション付き）
             Image(systemName: "chevron.right")
                 .rotationEffect(.degrees(collapsedFolderIDs.contains(folder.persistentModelID) ? 0 : 90))
                 .foregroundColor(.gray)
@@ -133,7 +117,6 @@ struct TodoListView: View {
                 }
             }
         }
-        // 長押しメニュー
         .contextMenu {
             Button {
                 folderToRename = folder
@@ -147,12 +130,12 @@ struct TodoListView: View {
                 folderToDelete = folder
                 isShowingDeleteAlert = true
             } label: {
-                Label("フォルダを削除", systemImage: "trash")
+                Label("タグを削除", systemImage: "trash")
             }
         }
     }
 
-    // MARK: - タスク行表示（フォルダカラー対応）
+    // MARK: - タスク行表示
     private func rowView(for item: TodoItem) -> some View {
         HStack {
             Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
@@ -195,7 +178,6 @@ struct TodoListView: View {
     private var uniqueFolders: [TaskFolder] {
         let allFolders = items.compactMap { $0.folder }
         let unique = Set(allFolders)
-        // sortOrder順にソート
         return Array(unique).sorted { $0.sortOrder < $1.sortOrder }
     }
 

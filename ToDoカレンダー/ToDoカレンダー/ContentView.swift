@@ -95,10 +95,10 @@ struct ContentView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                // ★左上：テンプレート管理ボタン
+                // 左上：タグ管理ボタン
                 ToolbarItem(placement: .topBarLeading) {
                     Button(action: { isShowingTemplateManager = true }) {
-                        Image(systemName: "folder")
+                        Image(systemName: "tag")
                     }
                 }
                 

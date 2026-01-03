@@ -9,32 +9,27 @@ import Foundation
 import SwiftData
 import SwiftUI
 
+/// タグ（カテゴリ）- タスクが直接参照
 @Model
 class TaskFolder {
     var name: String
-    var date: Date? // nil=テンプレ、日付あり=その日限定
     var calendar: AppCalendar?
 
-    // 親テンプレートへの参照（当日フォルダの場合に設定）
-    var templateFolder: TaskFolder?
-
-    // カラー設定（"red", "blue", "green", "orange", "purple", "pink", "yellow", "gray"）
+    // カラー設定
     var colorName: String?
 
-    // アイコン設定（SF Symbolsの名前）
+    // アイコン設定（SF Symbols）
     var iconName: String?
 
-    // 並び順（小さいほど上に表示）
+    // 並び順
     var sortOrder: Int = 0
 
     // フォルダ削除時は、中のタスクを「未分類」にする
     @Relationship(deleteRule: .nullify) var items: [TodoItem] = []
 
-    init(name: String, date: Date? = nil, calendar: AppCalendar? = nil, templateFolder: TaskFolder? = nil, colorName: String? = nil, iconName: String? = nil, sortOrder: Int = 0) {
+    init(name: String, calendar: AppCalendar? = nil, colorName: String? = nil, iconName: String? = nil, sortOrder: Int = 0) {
         self.name = name
-        self.date = date
         self.calendar = calendar
-        self.templateFolder = templateFolder
         self.colorName = colorName
         self.iconName = iconName
         self.sortOrder = sortOrder
