@@ -75,7 +75,7 @@ struct EditTodoView: View {
                     }
                 }
 
-                Section("フォルダ（カテゴリー）") {
+                Section("テンプレート") {
                     HStack {
                         Picker("フォルダ", selection: $item.folder) {
                             Text("未選択").tag(nil as TaskFolder?)

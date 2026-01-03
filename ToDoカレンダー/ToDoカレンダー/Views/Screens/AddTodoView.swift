@@ -77,7 +77,7 @@ struct AddTodoView: View {
                         DatePicker("時間", selection: $time, displayedComponents: .hourAndMinute)
                     }
                 }
-                Section("フォルダ（カテゴリー）") {
+                Section("テンプレート") {
                     HStack {
                         Picker("フォルダ", selection: $selectedFolder) {
                             Text("未選択").tag(nil as TaskFolder?)
