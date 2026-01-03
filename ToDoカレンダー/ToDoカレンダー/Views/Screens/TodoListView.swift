@@ -92,10 +92,22 @@ struct TodoListView: View {
             .alert("タグを削除", isPresented: $isShowingDeleteAlert) {
                 Button("削除", role: .destructive) {
                     if let folder = folderToDelete {
-                        modelContext.delete(folder)
+                        // 削除前にタスクのバックアップを更新
+                        for item in items where item.folder == folder {
+                            item.tagName = folder.name
+                            item.tagColorName = folder.colorName
+                            item.tagIconName = folder.iconName
+                        }
+                        // タグを削除
+                        withAnimation {
+                            modelContext.delete(folder)
+                        }
+                        folderToDelete = nil
                     }
                 }
-                Button("キャンセル", role: .cancel) {}
+                Button("キャンセル", role: .cancel) {
+                    folderToDelete = nil
+                }
             } message: {
                 Text("タグは削除されますが、タスクのタグ表示は維持されます。")
             }

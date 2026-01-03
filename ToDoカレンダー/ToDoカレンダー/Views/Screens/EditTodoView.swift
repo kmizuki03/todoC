@@ -95,6 +95,12 @@ struct EditTodoView: View {
                                     .tag(folder as TaskFolder?)
                             }
                         }
+                        .onChange(of: item.folder) { _, newFolder in
+                            // タグ変更時にバックアップを更新
+                            item.tagName = newFolder?.name
+                            item.tagColorName = newFolder?.colorName
+                            item.tagIconName = newFolder?.iconName
+                        }
 
                         Button(action: {
                             newFolderName = ""
