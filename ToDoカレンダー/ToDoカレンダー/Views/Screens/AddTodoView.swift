@@ -17,6 +17,7 @@ struct AddTodoView: View {
     var onSave: (String, Date, Bool, String, TaskFolder?) -> Void
 
     @Query private var allFolders: [TaskFolder]
+    @Query private var allItems: [TodoItem]
 
     @State private var title = ""
     @State private var location = ""
@@ -35,11 +36,36 @@ struct AddTodoView: View {
         self.onSave = onSave
 
         let calendarID = targetCalendar.persistentModelID
-        // テンプレートタグのみ表示
-        let predicate = #Predicate<TaskFolder> { folder in
-            folder.calendar?.persistentModelID == calendarID && folder.isTemplate == true
+        // カレンダーに属する全てのタグを取得
+        let folderPredicate = #Predicate<TaskFolder> { folder in
+            folder.calendar?.persistentModelID == calendarID
         }
-        _allFolders = Query(filter: predicate, sort: \.sortOrder)
+        _allFolders = Query(filter: folderPredicate, sort: \.sortOrder)
+
+        // 同じ日のタスクを取得するため、全タスクをクエリ
+        let itemPredicate = #Predicate<TodoItem> { item in
+            item.calendar?.persistentModelID == calendarID
+        }
+        _allItems = Query(filter: itemPredicate)
+    }
+
+    /// 選択可能なタグ: テンプレートタグ + その日に使用されたタグ
+    private var availableFolders: [TaskFolder] {
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: selectedDate)
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) ?? startOfDay
+
+        // その日に使用されているタグのIDを取得
+        let usedFolderIDs = Set(
+            allItems
+                .filter { $0.date >= startOfDay && $0.date < endOfDay }
+                .compactMap { $0.folder?.persistentModelID }
+        )
+
+        // テンプレートタグ OR その日に使用されたタグ
+        return allFolders.filter { folder in
+            folder.isTemplate || usedFolderIDs.contains(folder.persistentModelID)
+        }
     }
 
     var body: some View {
@@ -62,7 +88,7 @@ struct AddTodoView: View {
                     HStack {
                         Picker("タグ", selection: $selectedFolder) {
                             Text("なし").tag(nil as TaskFolder?)
-                            ForEach(allFolders) { folder in
+                            ForEach(availableFolders) { folder in
                                 FolderPickerRow(folder: folder)
                                     .tag(folder as TaskFolder?)
                             }
@@ -140,7 +166,7 @@ struct AddTodoView: View {
     }
 
     private func createFolder(name: String) {
-        let maxOrder = allFolders.map { $0.sortOrder }.max() ?? 0
+        let maxOrder = availableFolders.map { $0.sortOrder }.max() ?? 0
         let newFolder = TaskFolder(
             name: name,
             calendar: targetCalendar,

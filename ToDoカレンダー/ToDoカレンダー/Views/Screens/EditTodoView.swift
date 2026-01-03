@@ -14,7 +14,8 @@ struct EditTodoView: View {
 
     @Bindable var item: TodoItem
 
-    @Query private var folders: [TaskFolder]
+    @Query private var allFolders: [TaskFolder]
+    @Query private var allItems: [TodoItem]
 
     @State private var isShowingNewFolderAlert = false
     @State private var newFolderName = ""
@@ -23,13 +24,39 @@ struct EditTodoView: View {
         _item = Bindable(item)
 
         if let calendarID = item.calendar?.persistentModelID {
-            // テンプレートタグのみ表示
-            let predicate = #Predicate<TaskFolder> { folder in
-                folder.calendar?.persistentModelID == calendarID && folder.isTemplate == true
+            // カレンダーに属する全てのタグを取得
+            let folderPredicate = #Predicate<TaskFolder> { folder in
+                folder.calendar?.persistentModelID == calendarID
             }
-            _folders = Query(filter: predicate, sort: \.sortOrder)
+            _allFolders = Query(filter: folderPredicate, sort: \.sortOrder)
+
+            // 同じ日のタスクを取得するため、全タスクをクエリ
+            let itemPredicate = #Predicate<TodoItem> { item in
+                item.calendar?.persistentModelID == calendarID
+            }
+            _allItems = Query(filter: itemPredicate)
         } else {
-            _folders = Query(filter: #Predicate { $0.name == "" })
+            _allFolders = Query(filter: #Predicate { $0.name == "" })
+            _allItems = Query(filter: #Predicate { $0.title == "" })
+        }
+    }
+
+    /// 選択可能なタグ: テンプレートタグ + その日に使用されたタグ
+    private var availableFolders: [TaskFolder] {
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: item.date)
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) ?? startOfDay
+
+        // その日に使用されているタグのIDを取得
+        let usedFolderIDs = Set(
+            allItems
+                .filter { $0.date >= startOfDay && $0.date < endOfDay }
+                .compactMap { $0.folder?.persistentModelID }
+        )
+
+        // テンプレートタグ OR その日に使用されたタグ
+        return allFolders.filter { folder in
+            folder.isTemplate || usedFolderIDs.contains(folder.persistentModelID)
         }
     }
 
@@ -58,7 +85,7 @@ struct EditTodoView: View {
                     HStack {
                         Picker("タグ", selection: $item.folder) {
                             Text("なし").tag(nil as TaskFolder?)
-                            ForEach(folders) { folder in
+                            ForEach(availableFolders) { folder in
                                 FolderPickerRow(folder: folder)
                                     .tag(folder as TaskFolder?)
                             }
@@ -90,7 +117,7 @@ struct EditTodoView: View {
                 TextField("タグ名", text: $newFolderName)
                 Button("作成") {
                     if let calendar = item.calendar {
-                        let maxOrder = folders.map { $0.sortOrder }.max() ?? 0
+                        let maxOrder = availableFolders.map { $0.sortOrder }.max() ?? 0
                         let newFolder = TaskFolder(
                             name: newFolderName,
                             calendar: calendar,
