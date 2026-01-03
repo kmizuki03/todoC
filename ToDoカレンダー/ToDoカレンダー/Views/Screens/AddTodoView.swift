@@ -159,8 +159,7 @@ struct AddTodoView: View {
 
             // テンプレートマーク
             if folder.date == nil {
-                Label("テンプレート", systemImage: "doc.on.doc")
-                    .labelStyle(.iconOnly)
+                Text("(\(folder.name))")
                     .foregroundColor(.orange)
                     .font(.caption2)
             }
