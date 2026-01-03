@@ -75,7 +75,7 @@ struct EditTodoView: View {
                     }
                 }
 
-                Section("テンプレート") {
+                Section("フォルダ（カテゴリー）") {
                     HStack {
                         Picker("フォルダ", selection: $item.folder) {
                             Text("未選択").tag(nil as TaskFolder?)
@@ -163,14 +163,14 @@ struct EditTodoView: View {
                 if folder.date == nil {
                     HStack(spacing: 4) {
                         Image(systemName: "doc.on.doc")
-                        Text("\(folder.name) テンプレート")
+                        Text("テンプレート")
                     }
                     .font(.caption2)
                     .foregroundColor(.orange)
-                } else if let template = folder.templateFolder {
+                } else if folder.templateFolder != nil {
                     HStack(spacing: 4) {
                         Image(systemName: "link")
-                        Text("\(template.name) から生成")
+                        Text("テンプレートから生成")
                     }
                     .font(.caption2)
                     .foregroundColor(.secondary)

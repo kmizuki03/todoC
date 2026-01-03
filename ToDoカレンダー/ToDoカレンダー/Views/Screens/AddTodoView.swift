@@ -77,7 +77,7 @@ struct AddTodoView: View {
                         DatePicker("時間", selection: $time, displayedComponents: .hourAndMinute)
                     }
                 }
-                Section("テンプレート") {
+                Section("フォルダ（カテゴリー）") {
                     HStack {
                         Picker("フォルダ", selection: $selectedFolder) {
                             Text("未選択").tag(nil as TaskFolder?)
@@ -183,17 +183,10 @@ struct AddTodoView: View {
                 if folder.date == nil {
                     HStack(spacing: 4) {
                         Image(systemName: "doc.on.doc")
-                        Text("\(folder.name) - 保存時に当日フォルダが作成されます")
+                        Text("テンプレート - 保存時に当日フォルダが作成されます")
                     }
                     .font(.caption2)
                     .foregroundColor(.orange)
-                } else if let template = folder.templateFolder {
-                    HStack(spacing: 4) {
-                        Image(systemName: "link")
-                        Text("\(template.name) から生成")
-                    }
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
                 } else {
                     HStack(spacing: 4) {
                         Image(systemName: "calendar")
