@@ -91,19 +91,7 @@ struct TodoListView: View {
             }
             .alert("タグを削除", isPresented: $isShowingDeleteAlert) {
                 Button("削除", role: .destructive) {
-                    if let folder = folderToDelete {
-                        // 削除前にタスクのバックアップを更新
-                        for item in items where item.folder == folder {
-                            item.tagName = folder.name
-                            item.tagColorName = folder.colorName
-                            item.tagIconName = folder.iconName
-                        }
-                        // タグを削除
-                        withAnimation {
-                            modelContext.delete(folder)
-                        }
-                        folderToDelete = nil
-                    }
+                    deleteFolder()
                 }
                 Button("キャンセル", role: .cancel) {
                     folderToDelete = nil
@@ -263,5 +251,28 @@ struct TodoListView: View {
                 modelContext.delete(source[index])
             }
         }
+    }
+
+    private func deleteFolder() {
+        guard let folder = folderToDelete else { return }
+
+        // 削除前にフォルダ情報をローカル変数にコピー
+        let folderName = folder.name
+        let folderColorName = folder.colorName
+        let folderIconName = folder.iconName
+
+        // 先に参照をクリア
+        folderToDelete = nil
+
+        // バックアップを更新してから削除
+        for item in items where item.folder?.persistentModelID == folder.persistentModelID {
+            item.tagName = folderName
+            item.tagColorName = folderColorName
+            item.tagIconName = folderIconName
+            item.folder = nil
+        }
+
+        // フォルダを削除
+        modelContext.delete(folder)
     }
 }
