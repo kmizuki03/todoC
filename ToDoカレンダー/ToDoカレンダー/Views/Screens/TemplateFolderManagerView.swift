@@ -174,16 +174,18 @@ struct TemplateFolderManagerView: View {
 
     // 実際に削除（既存タスクはバックアップタグ情報で表示継続）
     private func deleteFolders(at offsets: IndexSet) {
-        for index in offsets {
-            let folder = allFolders[index]
+        // 先に削除対象のフォルダを配列にコピー
+        let foldersToDelete = offsets.map { allFolders[$0] }
 
+        for folder in foldersToDelete {
             // 削除前にフォルダ情報をローカル変数にコピー
             let folderName = folder.name
             let folderColorName = folder.colorName
             let folderIconName = folder.iconName
+            let itemsToUpdate = Array(folder.items)
 
             // フォルダに関連するタスクのバックアップを更新
-            for item in folder.items {
+            for item in itemsToUpdate {
                 item.tagName = folderName
                 item.tagColorName = folderColorName
                 item.tagIconName = folderIconName
