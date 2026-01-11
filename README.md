@@ -92,8 +92,8 @@ ToDoカレンダー/
     Extensions/
       AppAppearance.swift                   # 外観設定（システム/ライト/ダーク）
       DateExtensions.swift                  # 日付ユーティリティ
-      JapaneseHoliday.swift                 # 日本の祝日判定/祝日名
-      TaskNotificationManager.swift          # ローカル通知（許可/予約/取消/同期）
+      EventKitHolidayService.swift          # 祝日名の取得（端末の祝日カレンダー/EventKit）
+      TaskNotificationManager.swift         # ローカル通知（許可/予約/取消/同期）
     Models/
       AppCalendar.swift                     # カレンダーモデル
       TodoItem.swift                        # タスクモデル

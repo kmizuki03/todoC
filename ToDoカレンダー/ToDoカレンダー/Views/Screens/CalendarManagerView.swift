@@ -5,8 +5,8 @@
 //  Created by 加藤 瑞樹 on 2026/01/11.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct CalendarManagerView: View {
     @Environment(\.dismiss) private var dismiss
@@ -27,36 +27,8 @@ struct CalendarManagerView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section("カレンダー") {
-                    if allCalendars.isEmpty {
-                        Text("カレンダーがありません")
-                            .foregroundColor(.secondary)
-                    } else {
-                        ForEach(allCalendars) { calendar in
-                            HStack {
-                                Text(calendar.name)
-                                Spacer()
-                                if calendar.name == mainCalendarName {
-                                    Text("固定")
-                                        .font(.caption2)
-                                        .foregroundColor(.secondary)
-                                }
-                            }
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                selectedCalendar = calendar
-                                dismiss()
-                            }
-                        }
-                        .onDelete(perform: requestDelete)
-                    }
-                }
-
-                Section {
-                    Text("※ カレンダーを削除すると、そのカレンダー内のタスクとタグも削除されます。")
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-                }
+                appCalendarsSection
+                deleteWarningSection
             }
             .navigationTitle("カレンダー管理")
             .navigationBarTitleDisplayMode(.inline)
@@ -90,6 +62,43 @@ struct CalendarManagerView: View {
         }
     }
 
+    // MARK: - Sections
+
+    private var appCalendarsSection: some View {
+        Section("カレンダー") {
+            if allCalendars.isEmpty {
+                Text("カレンダーがありません")
+                    .foregroundColor(.secondary)
+            } else {
+                ForEach(allCalendars) { calendar in
+                    HStack {
+                        Text(calendar.name)
+                        Spacer()
+                        if calendar.name == mainCalendarName {
+                            Text("固定")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        selectedCalendar = calendar
+                        dismiss()
+                    }
+                }
+                .onDelete(perform: requestDelete)
+            }
+        }
+    }
+
+    private var deleteWarningSection: some View {
+        Section {
+            Text("※ カレンダーを削除すると、そのカレンダー内のタスクとタグも削除されます。")
+                .font(.footnote)
+                .foregroundColor(.secondary)
+        }
+    }
+
     private func requestDelete(at offsets: IndexSet) {
         let candidates = offsets.map { allCalendars[$0] }
 
@@ -107,7 +116,9 @@ struct CalendarManagerView: View {
         guard !pendingDelete.isEmpty else { return }
 
         // 削除後に選択カレンダーが消える場合は、メインへフォールバック
-        let deletingSelected = pendingDelete.contains { $0.persistentModelID == selectedCalendar?.persistentModelID }
+        let deletingSelected = pendingDelete.contains {
+            $0.persistentModelID == selectedCalendar?.persistentModelID
+        }
 
         for calendar in pendingDelete {
             modelContext.delete(calendar)
@@ -116,7 +127,8 @@ struct CalendarManagerView: View {
         pendingDelete = []
 
         if deletingSelected {
-            selectedCalendar = allCalendars.first(where: { $0.name == mainCalendarName })
+            selectedCalendar =
+                allCalendars.first(where: { $0.name == mainCalendarName })
                 ?? allCalendars.first
         }
     }
