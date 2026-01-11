@@ -12,6 +12,8 @@ struct TodoListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [TodoItem]
 
+    private let showAllCalendars: Bool
+
     @State private var editingItem: TodoItem?
     @State private var collapsedTagNames: Set<String> = []
 
@@ -22,13 +24,15 @@ struct TodoListView: View {
     @State private var folderToDelete: TaskFolder?
     @State private var isShowingDeleteAlert = false
 
-    init(selectedDate: Date, targetCalendar: AppCalendar) {
+    init(selectedDate: Date, targetCalendar: AppCalendar, showAllCalendars: Bool = false) {
+        self.showAllCalendars = showAllCalendars
         let start = Calendar.current.startOfDay(for: selectedDate)
         let end = Calendar.current.date(byAdding: .day, value: 1, to: start)!
         let calendarID = targetCalendar.persistentModelID
 
+        let showAll = showAllCalendars
         _items = Query(filter: #Predicate { item in
-            item.date >= start && item.date < end && item.calendar?.persistentModelID == calendarID
+            item.date >= start && item.date < end && (showAll || item.calendar?.persistentModelID == calendarID)
         }, sort: \.date)
     }
 
@@ -202,6 +206,14 @@ struct TodoListView: View {
                     .foregroundColor(item.isCompleted ? .gray : .primary)
 
                 HStack(spacing: 12) {
+                    if showAllCalendars, let calName = item.calendar?.name {
+                        Text(calName)
+                            .font(.caption2)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(4)
+                    }
                     if item.isTimeSet {
                         HStack(spacing: 4) {
                             Image(systemName: "clock")

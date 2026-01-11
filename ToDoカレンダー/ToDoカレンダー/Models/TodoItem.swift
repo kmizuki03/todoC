@@ -25,7 +25,7 @@ class TodoItem {
     var tagColorName: String?
     var tagIconName: String?
 
-    init(title: String, date: Date, isTimeSet: Bool = true, location: String = "", isCompleted: Bool = false, calendar: AppCalendar? = nil, folder: TaskFolder? = nil) {
+    init(title: String, date: Date, isTimeSet: Bool = false, location: String = "", isCompleted: Bool = false, calendar: AppCalendar? = nil, folder: TaskFolder? = nil) {
         self.title = title
         self.date = date
         self.isTimeSet = isTimeSet

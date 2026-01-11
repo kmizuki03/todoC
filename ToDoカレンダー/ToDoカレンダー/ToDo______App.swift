@@ -10,9 +10,12 @@ import SwiftData
 
 @main
 struct ToDo_______App: App {
+    @AppStorage("appAppearance") private var appAppearanceRaw = AppAppearance.system.rawValue
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .preferredColorScheme(AppAppearance(rawValue: appAppearanceRaw)?.colorScheme)
         }
         // TaskList を削除し、3つだけにしました
         .modelContainer(for: [TodoItem.self, TaskFolder.self, AppCalendar.self])

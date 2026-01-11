@@ -11,6 +11,8 @@ import SwiftData
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \AppCalendar.name) private var allCalendars: [AppCalendar]
+
+    @AppStorage("appAppearance") private var appAppearanceRaw = AppAppearance.system.rawValue
     
     @State private var selectedCalendar: AppCalendar?
     @State private var selectedDate = Date()
@@ -19,10 +21,20 @@ struct ContentView: View {
     // シート表示用フラグ
     @State private var isShowingAddSheet = false
     @State private var isShowingTemplateManager = false // ← 追加
+    @State private var isShowingCalendarManager = false
     @State private var isShowingNewCalendarAlert = false
     @State private var newCalendarName = ""
 
     let daysOfWeek = ["日", "月", "火", "水", "木", "金", "土"]
+
+    private var isMainCalendarSelected: Bool {
+        selectedCalendar?.name == "メイン"
+    }
+
+    private var appAppearance: AppAppearance {
+        get { AppAppearance(rawValue: appAppearanceRaw) ?? .system }
+        nonmutating set { appAppearanceRaw = newValue.rawValue }
+    }
     
     var body: some View {
         NavigationStack {
@@ -36,6 +48,36 @@ struct ContentView: View {
                             }
                             Divider()
                             Button("＋ カレンダーを追加") { isShowingNewCalendarAlert = true }
+                            Button("カレンダー管理") { isShowingCalendarManager = true }
+
+                            Divider()
+                            Button {
+                                appAppearance = .system
+                            } label: {
+                                if appAppearance == .system {
+                                    Label("表示: システム", systemImage: "checkmark")
+                                } else {
+                                    Text("表示: システム")
+                                }
+                            }
+                            Button {
+                                appAppearance = .light
+                            } label: {
+                                if appAppearance == .light {
+                                    Label("表示: ライト", systemImage: "checkmark")
+                                } else {
+                                    Text("表示: ライト")
+                                }
+                            }
+                            Button {
+                                appAppearance = .dark
+                            } label: {
+                                if appAppearance == .dark {
+                                    Label("表示: ダーク", systemImage: "checkmark")
+                                } else {
+                                    Text("表示: ダーク")
+                                }
+                            }
                         } label: {
                             HStack {
                                 Text(calendar.name)
@@ -75,7 +117,8 @@ struct ContentView: View {
                                 DayCellView(
                                     date: date,
                                     isSelected: Calendar.current.isDate(date, inSameDayAs: selectedDate),
-                                    targetCalendar: calendar
+                                    targetCalendar: calendar,
+                                    showAllCalendars: isMainCalendarSelected
                                 )
                                 .onTapGesture { selectedDate = date }
                             }
@@ -88,7 +131,7 @@ struct ContentView: View {
                 
                 // 3. リスト
                 if let calendar = selectedCalendar {
-                    TodoListView(selectedDate: selectedDate, targetCalendar: calendar)
+                    TodoListView(selectedDate: selectedDate, targetCalendar: calendar, showAllCalendars: isMainCalendarSelected)
                 } else {
                     ContentUnavailableView("カレンダーを選択", systemImage: "calendar")
                 }
@@ -130,6 +173,10 @@ struct ContentView: View {
                 if let calendar = selectedCalendar {
                     TemplateFolderManagerView(targetCalendar: calendar)
                 }
+            }
+            // カレンダー管理シート
+            .sheet(isPresented: $isShowingCalendarManager) {
+                CalendarManagerView(selectedCalendar: $selectedCalendar)
             }
             .alert("新規カレンダー", isPresented: $isShowingNewCalendarAlert) {
                 TextField("カレンダー名", text: $newCalendarName)

@@ -1,0 +1,123 @@
+//
+//  CalendarManagerView.swift
+//  ToDoカレンダー
+//
+//  Created by 加藤 瑞樹 on 2026/01/11.
+//
+
+import SwiftUI
+import SwiftData
+
+struct CalendarManagerView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+
+    @Binding var selectedCalendar: AppCalendar?
+
+    @Query(sort: \AppCalendar.name) private var allCalendars: [AppCalendar]
+
+    @State private var pendingDelete: [AppCalendar] = []
+    @State private var isShowingDeleteConfirm = false
+
+    @State private var isShowingError = false
+    @State private var errorMessage = ""
+
+    private let mainCalendarName = "メイン"
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section("カレンダー") {
+                    if allCalendars.isEmpty {
+                        Text("カレンダーがありません")
+                            .foregroundColor(.secondary)
+                    } else {
+                        ForEach(allCalendars) { calendar in
+                            HStack {
+                                Text(calendar.name)
+                                Spacer()
+                                if calendar.name == mainCalendarName {
+                                    Text("固定")
+                                        .font(.caption2)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                selectedCalendar = calendar
+                                dismiss()
+                            }
+                        }
+                        .onDelete(perform: requestDelete)
+                    }
+                }
+
+                Section {
+                    Text("※ カレンダーを削除すると、そのカレンダー内のタスクとタグも削除されます。")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                }
+            }
+            .navigationTitle("カレンダー管理")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("閉じる") { dismiss() }
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    EditButton()
+                }
+            }
+            .alert("削除確認", isPresented: $isShowingDeleteConfirm) {
+                Button("削除", role: .destructive) {
+                    deletePendingCalendars()
+                }
+                Button("キャンセル", role: .cancel) {
+                    pendingDelete = []
+                }
+            } message: {
+                if pendingDelete.count == 1 {
+                    Text("「\(pendingDelete[0].name)」を削除しますか？")
+                } else {
+                    Text("\(pendingDelete.count)件のカレンダーを削除しますか？")
+                }
+            }
+            .alert("エラー", isPresented: $isShowingError) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(errorMessage)
+            }
+        }
+    }
+
+    private func requestDelete(at offsets: IndexSet) {
+        let candidates = offsets.map { allCalendars[$0] }
+
+        if candidates.contains(where: { $0.name == mainCalendarName }) {
+            errorMessage = "メインカレンダーは削除できません。"
+            isShowingError = true
+            return
+        }
+
+        pendingDelete = candidates
+        isShowingDeleteConfirm = !pendingDelete.isEmpty
+    }
+
+    private func deletePendingCalendars() {
+        guard !pendingDelete.isEmpty else { return }
+
+        // 削除後に選択カレンダーが消える場合は、メインへフォールバック
+        let deletingSelected = pendingDelete.contains { $0.persistentModelID == selectedCalendar?.persistentModelID }
+
+        for calendar in pendingDelete {
+            modelContext.delete(calendar)
+        }
+
+        pendingDelete = []
+
+        if deletingSelected {
+            selectedCalendar = allCalendars.first(where: { $0.name == mainCalendarName })
+                ?? allCalendars.first
+        }
+    }
+}

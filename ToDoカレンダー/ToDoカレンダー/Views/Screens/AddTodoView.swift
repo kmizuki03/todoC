@@ -22,7 +22,7 @@ struct AddTodoView: View {
     @State private var title = ""
     @State private var location = ""
     @State private var time = Date()
-    @State private var isTimeSet = true
+    @State private var isTimeSet = false
 
     @State private var selectedFolder: TaskFolder?
 

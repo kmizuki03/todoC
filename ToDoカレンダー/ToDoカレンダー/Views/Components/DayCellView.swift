@@ -11,14 +11,16 @@ import SwiftData
 struct DayCellView: View {
     let date: Date
     let isSelected: Bool
-    let targetCalendar: AppCalendar // ← 追加
+    let targetCalendar: AppCalendar
+    let showAllCalendars: Bool
     
     @Query private var tasks: [TodoItem]
     
-    init(date: Date, isSelected: Bool, targetCalendar: AppCalendar) {
+    init(date: Date, isSelected: Bool, targetCalendar: AppCalendar, showAllCalendars: Bool = false) {
         self.date = date
         self.isSelected = isSelected
         self.targetCalendar = targetCalendar
+        self.showAllCalendars = showAllCalendars
         
         let calendar = Calendar.current
         let start = calendar.startOfDay(for: date)
@@ -26,9 +28,10 @@ struct DayCellView: View {
         
         let calendarID = targetCalendar.persistentModelID // IDで検索用
         
-        // 日付 かつ カレンダーが一致するもの
+        // 日付一致。メイン表示のときは全カレンダー、それ以外はカレンダー一致。
+        let showAll = showAllCalendars
         let predicate = #Predicate<TodoItem> { item in
-            item.date >= start && item.date < end && item.calendar?.persistentModelID == calendarID
+            item.date >= start && item.date < end && (showAll || item.calendar?.persistentModelID == calendarID)
         }
         _tasks = Query(filter: predicate)
     }
@@ -38,6 +41,19 @@ struct DayCellView: View {
         let total = tasks.count
         let completed = tasks.filter { $0.isCompleted }.count
         let percentage = total > 0 ? Int((Double(completed) / Double(total)) * 100) : 0
+
+        let weekday = Calendar.current.component(.weekday, from: date)
+        let isSunday = weekday == 1
+        let isSaturday = weekday == 7
+        let holidayName = JapaneseHoliday.holidayName(date)
+        let isHoliday = holidayName != nil
+
+        let dayTextColor: Color = {
+            if isHoliday || isSunday { return .red }
+            if isSaturday { return .blue }
+            if Calendar.current.isDateInToday(date) { return .blue }
+            return .primary
+        }()
         
         ZStack {
             if isSelected {
@@ -46,7 +62,15 @@ struct DayCellView: View {
             VStack(spacing: 2) {
                 Text("\(Calendar.current.component(.day, from: date))")
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(Calendar.current.isDateInToday(date) ? .blue : .primary)
+                    .foregroundColor(dayTextColor)
+
+                if let holidayName {
+                    Text(holidayName)
+                        .font(.system(size: 8, weight: .semibold))
+                        .foregroundColor(.red)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.5)
+                }
                 if total > 0 {
                     Text("\(percentage)%")
                         .font(.system(size: 10, weight: .bold))
@@ -56,6 +80,6 @@ struct DayCellView: View {
                 }
             }
         }
-        .frame(height: 45)
+        .frame(height: holidayName == nil ? 45 : 52)
     }
 }

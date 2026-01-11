@@ -29,7 +29,10 @@ extension Date {
     // "2024年 1月" のような表示用
     func formatMonth() -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "YYYY年 M月"
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.locale = Locale(identifier: "ja_JP")
+        formatter.timeZone = .current
+        formatter.dateFormat = "yyyy年 M月"
         return formatter.string(from: self)
     }
 }
