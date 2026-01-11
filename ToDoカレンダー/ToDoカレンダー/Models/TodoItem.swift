@@ -17,6 +17,8 @@ class TodoItem {
     var location: String
     var isCompleted: Bool
 
+    var memo: String
+
     var calendar: AppCalendar?
     var folder: TaskFolder?
 
@@ -25,12 +27,17 @@ class TodoItem {
     var tagColorName: String?
     var tagIconName: String?
 
-    init(title: String, date: Date, isTimeSet: Bool = false, location: String = "", isCompleted: Bool = false, calendar: AppCalendar? = nil, folder: TaskFolder? = nil) {
+    init(
+        title: String, date: Date, isTimeSet: Bool = false, location: String = "",
+        memo: String = "", isCompleted: Bool = false, calendar: AppCalendar? = nil,
+        folder: TaskFolder? = nil
+    ) {
         self.title = title
         self.date = date
         self.isTimeSet = isTimeSet
         self.location = location
         self.isCompleted = isCompleted
+        self.memo = memo
         self.calendar = calendar
         self.folder = folder
         // タグ情報をバックアップ

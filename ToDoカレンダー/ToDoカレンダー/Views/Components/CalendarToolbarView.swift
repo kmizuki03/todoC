@@ -48,27 +48,27 @@ struct CalendarToolbarView: View {
                     appAppearance = .system
                 } label: {
                     if appAppearance == .system {
-                        Label("表示: システム", systemImage: "checkmark")
+                        Label("テーマ: システム", systemImage: "checkmark")
                     } else {
-                        Text("表示: システム")
+                        Text("テーマ: システム")
                     }
                 }
                 Button {
                     appAppearance = .light
                 } label: {
                     if appAppearance == .light {
-                        Label("表示: ライト", systemImage: "checkmark")
+                        Label("テーマ: ライト", systemImage: "checkmark")
                     } else {
-                        Text("表示: ライト")
+                        Text("テーマ: ライト")
                     }
                 }
                 Button {
                     appAppearance = .dark
                 } label: {
                     if appAppearance == .dark {
-                        Label("表示: ダーク", systemImage: "checkmark")
+                        Label("テーマ: ダーク", systemImage: "checkmark")
                     } else {
-                        Text("表示: ダーク")
+                        Text("テーマ: ダーク")
                     }
                 }
             } label: {

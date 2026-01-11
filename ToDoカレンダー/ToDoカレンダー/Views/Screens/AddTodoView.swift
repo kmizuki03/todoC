@@ -5,8 +5,8 @@
 //  Created by 加藤 瑞樹 on 2026/01/03.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct AddTodoView: View {
     @Environment(\.dismiss) private var dismiss
@@ -14,13 +14,14 @@ struct AddTodoView: View {
 
     var selectedDate: Date
     var targetCalendar: AppCalendar
-    var onSave: (String, Date, Bool, String, TaskFolder?) -> Void
+    var onSave: (String, Date, Bool, String, String, TaskFolder?) -> Void
 
     @Query private var allFolders: [TaskFolder]
     @Query private var allItems: [TodoItem]
 
     @State private var title = ""
     @State private var location = ""
+    @State private var memo = ""
     @State private var time = Date()
     @State private var isTimeSet = false
 
@@ -30,7 +31,10 @@ struct AddTodoView: View {
     @State private var isShowingNewFolderAlert = false
     @State private var newFolderName = ""
 
-    init(selectedDate: Date, targetCalendar: AppCalendar, onSave: @escaping (String, Date, Bool, String, TaskFolder?) -> Void) {
+    init(
+        selectedDate: Date, targetCalendar: AppCalendar,
+        onSave: @escaping (String, Date, Bool, String, String, TaskFolder?) -> Void
+    ) {
         self.selectedDate = selectedDate
         self.targetCalendar = targetCalendar
         self.onSave = onSave
@@ -67,9 +71,8 @@ struct AddTodoView: View {
 
         // テンプレートタグ OR その日に使用されたタグ OR 現在選択中のタグ
         return allFolders.filter { folder in
-            folder.isTemplate ||
-            usedFolderIDs.contains(folder.persistentModelID) ||
-            folder.persistentModelID == currentFolderID
+            folder.isTemplate || usedFolderIDs.contains(folder.persistentModelID)
+                || folder.persistentModelID == currentFolderID
         }
     }
 
@@ -114,6 +117,11 @@ struct AddTodoView: View {
                     if let folder = selectedFolder {
                         FolderInfoView(folder: folder)
                     }
+                }
+
+                Section("メモ") {
+                    TextEditor(text: $memo)
+                        .frame(minHeight: 120)
                 }
             }
             .navigationTitle("タスク追加")
@@ -164,9 +172,10 @@ struct AddTodoView: View {
 
     // MARK: - Actions
     private func saveTask() {
-        let finalDate = isTimeSet ? combineDateAndTime(date: selectedDate, time: time) : selectedDate
+        let finalDate =
+            isTimeSet ? combineDateAndTime(date: selectedDate, time: time) : selectedDate
         // タグを直接参照（コピーなし）
-        onSave(title, finalDate, isTimeSet, location, selectedFolder)
+        onSave(title, finalDate, isTimeSet, location, memo, selectedFolder)
         dismiss()
     }
 

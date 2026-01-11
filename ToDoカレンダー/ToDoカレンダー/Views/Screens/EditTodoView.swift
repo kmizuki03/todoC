@@ -7,12 +7,10 @@
 
 import SwiftData
 import SwiftUI
-import UIKit
 
 struct EditTodoView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.openURL) private var openURL
 
     @Bindable var item: TodoItem
 
@@ -22,9 +20,7 @@ struct EditTodoView: View {
     @State private var isShowingNewFolderAlert = false
     @State private var newFolderName = ""
 
-    @State private var isShowingNotificationError = false
-    @State private var notificationErrorMessage = ""
-    @State private var canOpenNotificationSettings = false
+    @StateObject private var notificationError = NotificationErrorViewModel()
 
     init(item: TodoItem) {
         _item = Bindable(item)
@@ -121,6 +117,11 @@ struct EditTodoView: View {
                         FolderInfoView(folder: folder)
                     }
                 }
+
+                Section("メモ") {
+                    TextEditor(text: $item.memo)
+                        .frame(minHeight: 120)
+                }
             }
             .navigationTitle("編集")
             .navigationBarTitleDisplayMode(.inline)
@@ -132,10 +133,7 @@ struct EditTodoView: View {
                                 try await TaskNotificationManager.syncThrowing(for: item)
                                 dismiss()
                             } catch {
-                                let presentation = TaskNotificationManager.presentation(for: error)
-                                notificationErrorMessage = presentation.message
-                                canOpenNotificationSettings = presentation.canOpenSettings
-                                isShowingNotificationError = true
+                                notificationError.present(error)
                             }
                         }
                     }
@@ -144,18 +142,7 @@ struct EditTodoView: View {
             .onDisappear {
                 TaskNotificationManager.sync(for: item)
             }
-            .alert("通知", isPresented: $isShowingNotificationError) {
-                if canOpenNotificationSettings {
-                    Button("設定を開く") {
-                        if let url = URL(string: UIApplication.openSettingsURLString) {
-                            openURL(url)
-                        }
-                    }
-                }
-                Button("OK", role: .cancel) {}
-            } message: {
-                Text(notificationErrorMessage)
-            }
+            .notificationErrorAlert(notificationError)
             .alert("新しいタグを作成", isPresented: $isShowingNewFolderAlert) {
                 TextField("タグ名", text: $newFolderName)
                 Button("作成") {

@@ -7,16 +7,15 @@
 
 import SwiftData
 import SwiftUI
-import UIKit
 
 struct TodoListView: View {
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.openURL) private var openURL
     @Query private var items: [TodoItem]
 
     private let showAllCalendars: Bool
 
     @State private var editingItem: TodoItem?
+    @State private var memoItem: TodoItem?
     @State private var collapsedTagNames: Set<String> = []
 
     @State private var folderToRename: TaskFolder?
@@ -26,9 +25,7 @@ struct TodoListView: View {
     @State private var folderToDelete: TaskFolder?
     @State private var isShowingDeleteAlert = false
 
-    @State private var isShowingNotificationError = false
-    @State private var notificationErrorMessage = ""
-    @State private var canOpenNotificationSettings = false
+    @StateObject private var notificationError = NotificationErrorViewModel()
 
     init(selectedDate: Date, targetCalendar: AppCalendar, showAllCalendars: Bool = false) {
         self.showAllCalendars = showAllCalendars
@@ -126,6 +123,9 @@ struct TodoListView: View {
             .sheet(item: $editingItem) { item in
                 EditTodoView(item: item)
             }
+            .sheet(item: $memoItem) { item in
+                TodoMemoView(item: item)
+            }
             .alert("タグ名の変更", isPresented: $isShowingRenameAlert) {
                 TextField("新しい名前", text: $renameInput)
                 Button("保存") {
@@ -145,18 +145,7 @@ struct TodoListView: View {
             } message: {
                 Text("タグは削除されますが、タスクのタグ表示は維持されます。")
             }
-            .alert("通知", isPresented: $isShowingNotificationError) {
-                if canOpenNotificationSettings {
-                    Button("設定を開く") {
-                        if let url = URL(string: UIApplication.openSettingsURLString) {
-                            openURL(url)
-                        }
-                    }
-                }
-                Button("OK", role: .cancel) {}
-            } message: {
-                Text(notificationErrorMessage)
-            }
+            .notificationErrorAlert(notificationError)
         }
     }
 
@@ -265,10 +254,7 @@ struct TodoListView: View {
                     do {
                         try await TaskNotificationManager.syncThrowing(for: item)
                     } catch {
-                        let presentation = TaskNotificationManager.presentation(for: error)
-                        notificationErrorMessage = presentation.message
-                        canOpenNotificationSettings = presentation.canOpenSettings
-                        isShowingNotificationError = true
+                        notificationError.present(error)
                     }
                 }
             } label: {
@@ -311,8 +297,18 @@ struct TodoListView: View {
             }
 
             Spacer()
+
+            if !item.memo.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                Image(systemName: "note.text")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
         }
         .padding(.vertical, 4)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            memoItem = item
+        }
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             Button(role: .destructive) {
                 TaskNotificationManager.cancel(for: item)

@@ -80,23 +80,13 @@ struct CalendarManagerView: View {
             }
         }
         .onAppear {
-            ensureDefaultCalendarExistsIfNeeded()
+            if let ensured = AppCalendarIntegrity.ensureDefaultCalendarExists(
+                modelContext: modelContext),
+                selectedCalendar == nil
+            {
+                selectedCalendar = ensured
+            }
         }
-    }
-
-    private func ensureDefaultCalendarExistsIfNeeded() {
-        guard !allCalendars.contains(where: { $0.isDefault }) else { return }
-        if let legacyMain = allCalendars.first(where: { $0.name == "メイン" }) {
-            legacyMain.isDefault = true
-            return
-        }
-        if let first = allCalendars.first {
-            first.isDefault = true
-            return
-        }
-        let defaultCal = AppCalendar(name: "メイン", isDefault: true)
-        modelContext.insert(defaultCal)
-        selectedCalendar = defaultCal
     }
 
     // MARK: - Sections

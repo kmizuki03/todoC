@@ -5,9 +5,9 @@
 //  Created by 加藤 瑞樹 on 2026/01/03.
 //
 
-import SwiftUI
-import SwiftData
 import Foundation
+import SwiftData
+import SwiftUI
 
 @main
 struct ToDo_______App: App {
@@ -15,12 +15,9 @@ struct ToDo_______App: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
                 .preferredColorScheme(AppAppearance(rawValue: appAppearanceRaw)?.colorScheme)
                 .environment(\.locale, Locale(identifier: "ja_JP"))
-                .task {
-                    await TaskNotificationManager.requestAuthorizationIfNeeded()
-                }
         }
         // TaskList を削除し、3つだけにしました
         .modelContainer(for: [TodoItem.self, TaskFolder.self, AppCalendar.self])

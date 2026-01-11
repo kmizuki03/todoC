@@ -7,37 +7,28 @@
 
 import SwiftData
 import SwiftUI
-import UIKit
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.openURL) private var openURL
     @Query(sort: \AppCalendar.name) private var allCalendars: [AppCalendar]
+
+    @StateObject private var viewModel: ContentViewModel
 
     @StateObject private var holidayService = EventKitHolidayService()
     @StateObject private var calendarViewModel = CalendarViewModel()
 
     @AppStorage("appAppearance") private var appAppearanceRaw = AppAppearance.system.rawValue
 
-    @State private var selectedCalendar: AppCalendar?
-
     private let swipeThreshold: CGFloat = 60
 
-    // シート表示用フラグ
-    @State private var isShowingAddSheet = false
-    @State private var isShowingTemplateManager = false  // ← 追加
-    @State private var isShowingCalendarManager = false
-    @State private var isShowingNewCalendarAlert = false
-    @State private var newCalendarName = ""
-
-    @State private var isShowingNotificationError = false
-    @State private var notificationErrorMessage = ""
-    @State private var canOpenNotificationSettings = false
+    init(viewModel: ContentViewModel = ContentViewModel()) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
 
     let daysOfWeek = ["日", "月", "火", "水", "木", "金", "土"]
 
     private var isMainCalendarSelected: Bool {
-        selectedCalendar?.isDefault == true
+        viewModel.selectedCalendar?.isDefault == true
     }
 
     private var appAppearance: AppAppearance {
@@ -49,11 +40,11 @@ struct ContentView: View {
         VStack(spacing: 0) {
             CalendarToolbarView(
                 allCalendars: allCalendars,
-                selectedCalendar: $selectedCalendar,
-                isShowingAddSheet: $isShowingAddSheet,
-                isShowingTemplateManager: $isShowingTemplateManager,
-                isShowingCalendarManager: $isShowingCalendarManager,
-                isShowingNewCalendarAlert: $isShowingNewCalendarAlert,
+                selectedCalendar: $viewModel.selectedCalendar,
+                isShowingAddSheet: $viewModel.isShowingAddSheet,
+                isShowingTemplateManager: $viewModel.isShowingTemplateManager,
+                isShowingCalendarManager: $viewModel.isShowingCalendarManager,
+                isShowingNewCalendarAlert: $viewModel.isShowingNewCalendarAlert,
                 appAppearance: Binding(
                     get: { appAppearance },
                     set: { appAppearance = $0 }
@@ -68,7 +59,7 @@ struct ContentView: View {
                 showAllCalendars: isMainCalendarSelected,
                 onDayTapped: { date in
                     if calendarViewModel.selectDate(date) {
-                        isShowingAddSheet = true
+                        viewModel.isShowingAddSheet = true
                     }
                 }
             )
@@ -94,17 +85,24 @@ struct ContentView: View {
                 await holidayService.refreshHolidays(forMonthContaining: newValue)
             }
         }
+        .onChange(of: allCalendars.count) { _, _ in
+            if viewModel.selectedCalendar == nil {
+                viewModel.selectedCalendar =
+                    allCalendars.first(where: { $0.isDefault }) ?? allCalendars.first
+            }
+        }
         // タスク追加シート
-        .sheet(isPresented: $isShowingAddSheet) {
+        .sheet(isPresented: $viewModel.isShowingAddSheet) {
             if let calendar = selectedCalendar {
                 AddTodoView(selectedDate: calendarViewModel.selectedDate, targetCalendar: calendar)
                 {
-                    title, date, isTimeSet, location, folder in
+                    title, date, isTimeSet, location, memo, folder in
                     let newItem = TodoItem(
                         title: title,
                         date: date,
                         isTimeSet: isTimeSet,
                         location: location,
+                        memo: memo,
                         calendar: calendar,
                         folder: folder
                     )
@@ -113,79 +111,35 @@ struct ContentView: View {
                         do {
                             try await TaskNotificationManager.syncThrowing(for: newItem)
                         } catch {
-                            let presentation = TaskNotificationManager.presentation(for: error)
-                            notificationErrorMessage = presentation.message
-                            canOpenNotificationSettings = presentation.canOpenSettings
-                            isShowingNotificationError = true
+                            viewModel.presentNotificationError(error)
                         }
                     }
                 }
             }
         }
         // ★テンプレート管理シート
-        .sheet(isPresented: $isShowingTemplateManager) {
+        .sheet(isPresented: $viewModel.isShowingTemplateManager) {
             if let calendar = selectedCalendar {
                 TemplateFolderManagerView(targetCalendar: calendar)
             }
         }
         // カレンダー管理シート
-        .sheet(isPresented: $isShowingCalendarManager) {
-            CalendarManagerView(selectedCalendar: $selectedCalendar)
+        .sheet(isPresented: $viewModel.isShowingCalendarManager) {
+            CalendarManagerView(selectedCalendar: $viewModel.selectedCalendar)
         }
-        .alert("新規カレンダー", isPresented: $isShowingNewCalendarAlert) {
-            TextField("カレンダー名", text: $newCalendarName)
+        .alert("新規カレンダー", isPresented: $viewModel.isShowingNewCalendarAlert) {
+            TextField("カレンダー名", text: $viewModel.newCalendarName)
             Button("作成") {
-                let newCal = AppCalendar(name: newCalendarName, isDefault: false)
-                modelContext.insert(newCal)
-                selectedCalendar = newCal
-                newCalendarName = ""
+                viewModel.createNewCalendar(modelContext: modelContext)
             }
-            Button("キャンセル", role: .cancel) {}
-        }
-        .alert("通知", isPresented: $isShowingNotificationError) {
-            if canOpenNotificationSettings {
-                Button("設定を開く") {
-                    if let url = URL(string: UIApplication.openSettingsURLString) {
-                        openURL(url)
-                    }
-                }
-            }
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text(notificationErrorMessage)
-        }
-        .onAppear {
-            let defaultCalendar = ensureDefaultCalendarExists()
-            if selectedCalendar == nil {
-                selectedCalendar = defaultCalendar ?? allCalendars.first
+            Button("キャンセル", role: .cancel) {
+                viewModel.newCalendarName = ""
             }
         }
+        .notificationErrorAlert(viewModel.notificationError)
     }
 
-    @discardableResult
-    private func ensureDefaultCalendarExists() -> AppCalendar? {
-        if allCalendars.isEmpty {
-            let defaultCal = AppCalendar(name: "メイン", isDefault: true)
-            modelContext.insert(defaultCal)
-            return defaultCal
-        }
-
-        let defaults = allCalendars.filter { $0.isDefault }
-        if let firstDefault = defaults.first {
-            // 万一複数立っていたら 1つに正規化
-            for extra in defaults.dropFirst() {
-                extra.isDefault = false
-            }
-            return firstDefault
-        }
-
-        // 既存データ移行: 旧ロジックの "メイン" を優先、なければ先頭をデフォルト化
-        if let legacyMain = allCalendars.first(where: { $0.name == "メイン" }) {
-            legacyMain.isDefault = true
-            return legacyMain
-        }
-
-        allCalendars.first?.isDefault = true
-        return allCalendars.first
+    private var selectedCalendar: AppCalendar? {
+        viewModel.selectedCalendar
     }
 }
