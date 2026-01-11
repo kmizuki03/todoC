@@ -5,11 +5,13 @@
 //  Created by 加藤 瑞樹 on 2026/01/03.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
+import UIKit
 
 struct TodoListView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.openURL) private var openURL
     @Query private var items: [TodoItem]
 
     private let showAllCalendars: Bool
@@ -24,6 +26,10 @@ struct TodoListView: View {
     @State private var folderToDelete: TaskFolder?
     @State private var isShowingDeleteAlert = false
 
+    @State private var isShowingNotificationError = false
+    @State private var notificationErrorMessage = ""
+    @State private var canOpenNotificationSettings = false
+
     init(selectedDate: Date, targetCalendar: AppCalendar, showAllCalendars: Bool = false) {
         self.showAllCalendars = showAllCalendars
         let start = Calendar.current.startOfDay(for: selectedDate)
@@ -31,12 +37,18 @@ struct TodoListView: View {
         let calendarID = targetCalendar.persistentModelID
 
         let showAll = showAllCalendars
-        _items = Query(filter: #Predicate { item in
-            item.date >= start && item.date < end && (showAll || item.calendar?.persistentModelID == calendarID)
-        }, sort: \.date)
+        _items = Query(
+            filter: #Predicate { item in
+                item.date >= start && item.date < end
+                    && (showAll || item.calendar?.persistentModelID == calendarID)
+            }, sort: \.date)
     }
 
     var body: some View {
+        let tasksByFolder = tasksGroupedByFolder
+        let tasksByOrphanTagName = tasksGroupedByOrphanedTagName
+        let uncategorizedTasks = uncategorizedItems
+
         if items.isEmpty {
             ContentUnavailableView("タスクなし", systemImage: "checklist")
         } else {
@@ -45,17 +57,20 @@ struct TodoListView: View {
                 ForEach(uniqueFolders) { folder in
                     Section {
                         FolderHeader(folder: folder)
-                            .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 6, trailing: 16))
+                            .listRowInsets(
+                                EdgeInsets(top: 10, leading: 16, bottom: 6, trailing: 16)
+                            )
                             .listRowSeparator(.hidden)
                             .listRowBackground(Color.clear)
 
                         if !collapsedTagNames.contains(folder.name) {
-                            let tasksInFolder = items.filter { $0.folder == folder }
+                            let tasksInFolder = tasksByFolder[folder] ?? []
 
                             ForEach(tasksInFolder) { item in
                                 rowView(for: item)
                             }
-                            .onDelete { indexSet in deleteItems(at: indexSet, source: tasksInFolder) }
+                            .onDelete { indexSet in deleteItems(at: indexSet, source: tasksInFolder)
+                            }
                         }
                     }
                 }
@@ -64,23 +79,26 @@ struct TodoListView: View {
                 ForEach(orphanedTagNames, id: \.self) { tagName in
                     Section {
                         OrphanedTagHeader(tagName: tagName)
-                            .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 6, trailing: 16))
+                            .listRowInsets(
+                                EdgeInsets(top: 10, leading: 16, bottom: 6, trailing: 16)
+                            )
                             .listRowSeparator(.hidden)
                             .listRowBackground(Color.clear)
 
                         if !collapsedTagNames.contains(tagName) {
-                            let tasksWithTag = items.filter { $0.folder == nil && $0.tagName == tagName }
+                            let tasksWithTag = tasksByOrphanTagName[tagName] ?? []
 
                             ForEach(tasksWithTag) { item in
                                 rowView(for: item)
                             }
-                            .onDelete { indexSet in deleteItems(at: indexSet, source: tasksWithTag) }
+                            .onDelete { indexSet in deleteItems(at: indexSet, source: tasksWithTag)
+                            }
                         }
                     }
                 }
 
                 // 未分類のセクション
-                if hasUncategorizedItems {
+                if !uncategorizedTasks.isEmpty {
                     Section {
                         Text("未分類")
                             .foregroundColor(.secondary)
@@ -89,15 +107,18 @@ struct TodoListView: View {
                             .padding(.horizontal, 4)
                             .background(.ultraThinMaterial)
                             .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                            .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 6, trailing: 16))
+                            .listRowInsets(
+                                EdgeInsets(top: 10, leading: 16, bottom: 6, trailing: 16)
+                            )
                             .listRowSeparator(.hidden)
                             .listRowBackground(Color.clear)
 
-                        let uncategorizedTasks = items.filter { $0.folder == nil && $0.tagName == nil }
                         ForEach(uncategorizedTasks) { item in
                             rowView(for: item)
                         }
-                        .onDelete { indexSet in deleteItems(at: indexSet, source: uncategorizedTasks) }
+                        .onDelete { indexSet in
+                            deleteItems(at: indexSet, source: uncategorizedTasks)
+                        }
                     }
                 }
             }
@@ -124,6 +145,18 @@ struct TodoListView: View {
             } message: {
                 Text("タグは削除されますが、タスクのタグ表示は維持されます。")
             }
+            .alert("通知", isPresented: $isShowingNotificationError) {
+                if canOpenNotificationSettings {
+                    Button("設定を開く") {
+                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                            openURL(url)
+                        }
+                    }
+                }
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(notificationErrorMessage)
+            }
         }
     }
 
@@ -144,7 +177,8 @@ struct TodoListView: View {
             Image(systemName: "chevron.right")
                 .rotationEffect(.degrees(collapsedTagNames.contains(folder.name) ? 0 : 90))
                 .foregroundColor(.gray)
-                .animation(.easeInOut(duration: 0.2), value: collapsedTagNames.contains(folder.name))
+                .animation(
+                    .easeInOut(duration: 0.2), value: collapsedTagNames.contains(folder.name))
         }
         .padding(.vertical, 6)
         .padding(.horizontal, 4)
@@ -227,7 +261,16 @@ struct TodoListView: View {
                 withAnimation {
                     item.isCompleted.toggle()
                 }
-                TaskNotificationManager.sync(for: item)
+                Task {
+                    do {
+                        try await TaskNotificationManager.syncThrowing(for: item)
+                    } catch {
+                        let presentation = TaskNotificationManager.presentation(for: error)
+                        notificationErrorMessage = presentation.message
+                        canOpenNotificationSettings = presentation.canOpenSettings
+                        isShowingNotificationError = true
+                    }
+                }
             } label: {
                 Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
                     .font(.title2)
@@ -294,16 +337,28 @@ struct TodoListView: View {
         return Array(unique).sorted { $0.sortOrder < $1.sortOrder }
     }
 
+    private var tasksGroupedByFolder: [TaskFolder: [TodoItem]] {
+        Dictionary(grouping: items.filter { $0.folder != nil }, by: { $0.folder! })
+    }
+
+    private var tasksGroupedByOrphanedTagName: [String: [TodoItem]] {
+        Dictionary(
+            grouping: items.filter { $0.folder == nil && $0.tagName != nil },
+            by: { $0.tagName! }
+        )
+    }
+
+    private var uncategorizedItems: [TodoItem] {
+        items.filter { $0.folder == nil && $0.tagName == nil }
+    }
+
     // 削除されたタグのタグ名一覧（folder == nil だけど tagName がある）
     private var orphanedTagNames: [String] {
-        let names = items
+        let names =
+            items
             .filter { $0.folder == nil && $0.tagName != nil }
             .compactMap { $0.tagName }
         return Array(Set(names)).sorted()
-    }
-
-    private var hasUncategorizedItems: Bool {
-        items.contains { $0.folder == nil && $0.tagName == nil }
     }
 
     private func deleteItems(at offsets: IndexSet, source: [TodoItem]) {

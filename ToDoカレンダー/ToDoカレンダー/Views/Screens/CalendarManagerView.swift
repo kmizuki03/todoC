@@ -22,7 +22,8 @@ struct CalendarManagerView: View {
     @State private var isShowingError = false
     @State private var errorMessage = ""
 
-    private let mainCalendarName = "メイン"
+    @State private var isShowingNewCalendarAlert = false
+    @State private var newCalendarName = ""
 
     var body: some View {
         NavigationStack {
@@ -35,6 +36,14 @@ struct CalendarManagerView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("閉じる") { dismiss() }
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        newCalendarName = ""
+                        isShowingNewCalendarAlert = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
                 }
                 ToolbarItem(placement: .primaryAction) {
                     EditButton()
@@ -59,7 +68,35 @@ struct CalendarManagerView: View {
             } message: {
                 Text(errorMessage)
             }
+            .alert("新規カレンダー", isPresented: $isShowingNewCalendarAlert) {
+                TextField("カレンダー名", text: $newCalendarName)
+                Button("作成") {
+                    let newCal = AppCalendar(name: newCalendarName)
+                    modelContext.insert(newCal)
+                    selectedCalendar = newCal
+                    newCalendarName = ""
+                }
+                Button("キャンセル", role: .cancel) {}
+            }
         }
+        .onAppear {
+            ensureDefaultCalendarExistsIfNeeded()
+        }
+    }
+
+    private func ensureDefaultCalendarExistsIfNeeded() {
+        guard !allCalendars.contains(where: { $0.isDefault }) else { return }
+        if let legacyMain = allCalendars.first(where: { $0.name == "メイン" }) {
+            legacyMain.isDefault = true
+            return
+        }
+        if let first = allCalendars.first {
+            first.isDefault = true
+            return
+        }
+        let defaultCal = AppCalendar(name: "メイン", isDefault: true)
+        modelContext.insert(defaultCal)
+        selectedCalendar = defaultCal
     }
 
     // MARK: - Sections
@@ -74,7 +111,7 @@ struct CalendarManagerView: View {
                     HStack {
                         Text(calendar.name)
                         Spacer()
-                        if calendar.name == mainCalendarName {
+                        if calendar.isDefault {
                             Text("固定")
                                 .font(.caption2)
                                 .foregroundColor(.secondary)
@@ -102,8 +139,8 @@ struct CalendarManagerView: View {
     private func requestDelete(at offsets: IndexSet) {
         let candidates = offsets.map { allCalendars[$0] }
 
-        if candidates.contains(where: { $0.name == mainCalendarName }) {
-            errorMessage = "メインカレンダーは削除できません。"
+        if candidates.contains(where: { $0.isDefault }) {
+            errorMessage = "デフォルトカレンダーは削除できません。"
             isShowingError = true
             return
         }
@@ -128,7 +165,7 @@ struct CalendarManagerView: View {
 
         if deletingSelected {
             selectedCalendar =
-                allCalendars.first(where: { $0.name == mainCalendarName })
+                allCalendars.first(where: { $0.isDefault })
                 ?? allCalendars.first
         }
     }

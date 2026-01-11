@@ -5,12 +5,14 @@
 //  Created by 加藤 瑞樹 on 2026/01/03.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
+import UIKit
 
 struct EditTodoView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.openURL) private var openURL
 
     @Bindable var item: TodoItem
 
@@ -19,6 +21,10 @@ struct EditTodoView: View {
 
     @State private var isShowingNewFolderAlert = false
     @State private var newFolderName = ""
+
+    @State private var isShowingNotificationError = false
+    @State private var notificationErrorMessage = ""
+    @State private var canOpenNotificationSettings = false
 
     init(item: TodoItem) {
         _item = Bindable(item)
@@ -59,9 +65,8 @@ struct EditTodoView: View {
 
         // テンプレートタグ OR その日に使用されたタグ OR 現在選択中のタグ
         return allFolders.filter { folder in
-            folder.isTemplate ||
-            usedFolderIDs.contains(folder.persistentModelID) ||
-            folder.persistentModelID == currentFolderID
+            folder.isTemplate || usedFolderIDs.contains(folder.persistentModelID)
+                || folder.persistentModelID == currentFolderID
         }
     }
 
@@ -122,13 +127,34 @@ struct EditTodoView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("完了") {
-                        TaskNotificationManager.sync(for: item)
-                        dismiss()
+                        Task {
+                            do {
+                                try await TaskNotificationManager.syncThrowing(for: item)
+                                dismiss()
+                            } catch {
+                                let presentation = TaskNotificationManager.presentation(for: error)
+                                notificationErrorMessage = presentation.message
+                                canOpenNotificationSettings = presentation.canOpenSettings
+                                isShowingNotificationError = true
+                            }
+                        }
                     }
                 }
             }
             .onDisappear {
                 TaskNotificationManager.sync(for: item)
+            }
+            .alert("通知", isPresented: $isShowingNotificationError) {
+                if canOpenNotificationSettings {
+                    Button("設定を開く") {
+                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                            openURL(url)
+                        }
+                    }
+                }
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(notificationErrorMessage)
             }
             .alert("新しいタグを作成", isPresented: $isShowingNewFolderAlert) {
                 TextField("タグ名", text: $newFolderName)

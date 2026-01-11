@@ -7,30 +7,21 @@
 
 import SwiftData
 import SwiftUI
+import UIKit
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.openURL) private var openURL
     @Query(sort: \AppCalendar.name) private var allCalendars: [AppCalendar]
 
     @StateObject private var holidayService = EventKitHolidayService()
+    @StateObject private var calendarViewModel = CalendarViewModel()
 
     @AppStorage("appAppearance") private var appAppearanceRaw = AppAppearance.system.rawValue
 
     @State private var selectedCalendar: AppCalendar?
-    @State private var selectedDate = Date()
-    @State private var currentMonth = Date()
-    @State private var isCalendarCollapsed = false
 
     private let swipeThreshold: CGFloat = 60
-
-    private static let collapsedDateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.calendar = Calendar(identifier: .gregorian)
-        formatter.locale = Locale(identifier: "ja_JP")
-        formatter.timeZone = .current
-        formatter.dateFormat = "yyyy年M月d日(EEE)"
-        return formatter
-    }()
 
     // シート表示用フラグ
     @State private var isShowingAddSheet = false
@@ -39,10 +30,14 @@ struct ContentView: View {
     @State private var isShowingNewCalendarAlert = false
     @State private var newCalendarName = ""
 
+    @State private var isShowingNotificationError = false
+    @State private var notificationErrorMessage = ""
+    @State private var canOpenNotificationSettings = false
+
     let daysOfWeek = ["日", "月", "火", "水", "木", "金", "土"]
 
     private var isMainCalendarSelected: Bool {
-        selectedCalendar?.name == "メイン"
+        selectedCalendar?.isDefault == true
     }
 
     private var appAppearance: AppAppearance {
@@ -52,185 +47,30 @@ struct ContentView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // 1. 画面上部：操作バー（タグ管理／カレンダー選択／追加）
-            HStack(spacing: 12) {
-                Button(action: { isShowingTemplateManager = true }) {
-                    Image(systemName: "tag")
-                        .font(.headline)
-                        .frame(width: 36, height: 36)
-                        .background(Color.gray.opacity(0.12))
-                        .clipShape(Circle())
-                }
-                .buttonStyle(.plain)
+            CalendarToolbarView(
+                allCalendars: allCalendars,
+                selectedCalendar: $selectedCalendar,
+                isShowingAddSheet: $isShowingAddSheet,
+                isShowingTemplateManager: $isShowingTemplateManager,
+                isShowingCalendarManager: $isShowingCalendarManager,
+                isShowingNewCalendarAlert: $isShowingNewCalendarAlert,
+                appAppearance: Binding(
+                    get: { appAppearance },
+                    set: { appAppearance = $0 }
+                )
+            )
 
-                Spacer(minLength: 0)
-
-                Menu {
-                    ForEach(allCalendars) { cal in
-                        Button(cal.name) { selectedCalendar = cal }
-                    }
-                    Divider()
-                    Button("＋ カレンダーを追加") { isShowingNewCalendarAlert = true }
-                    Button("カレンダー管理") { isShowingCalendarManager = true }
-
-                    Divider()
-                    Button {
-                        appAppearance = .system
-                    } label: {
-                        if appAppearance == .system {
-                            Label("表示: システム", systemImage: "checkmark")
-                        } else {
-                            Text("表示: システム")
-                        }
-                    }
-                    Button {
-                        appAppearance = .light
-                    } label: {
-                        if appAppearance == .light {
-                            Label("表示: ライト", systemImage: "checkmark")
-                        } else {
-                            Text("表示: ライト")
-                        }
-                    }
-                    Button {
-                        appAppearance = .dark
-                    } label: {
-                        if appAppearance == .dark {
-                            Label("表示: ダーク", systemImage: "checkmark")
-                        } else {
-                            Text("表示: ダーク")
-                        }
-                    }
-                } label: {
-                    HStack(spacing: 6) {
-                        Text(selectedCalendar?.name ?? "カレンダー")
-                            .font(.headline)
-                        Image(systemName: "chevron.down")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(Color.gray.opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                    .foregroundColor(.primary)
-                }
-
-                Spacer(minLength: 0)
-
-                Button(action: { isShowingAddSheet = true }) {
-                    Image(systemName: "plus")
-                        .font(.headline)
-                        .frame(width: 36, height: 36)
-                        .background(Color.gray.opacity(0.12))
-                        .clipShape(Circle())
-                }
-                .buttonStyle(.plain)
-            }
-            .padding(.horizontal)
-            .padding(.top, 8)
-            .padding(.bottom, 6)
-
-            // 2. 月カレンダー
-            VStack(spacing: isCalendarCollapsed ? 8 : 15) {
-                HStack {
-                    Button(action: { changeMonth(by: -1) }) { Image(systemName: "chevron.left") }
-                    Spacer()
-                    Button(action: { goToToday() }) {
-                        Text(currentMonth.formatMonth()).font(.title2.bold())
-                    }
-                    .buttonStyle(.plain)
-                    Spacer()
-                    HStack(spacing: 12) {
-                        Button(action: { changeMonth(by: 1) }) {
-                            Image(systemName: "chevron.right")
-                        }
-
-                        Button {
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                isCalendarCollapsed.toggle()
-                            }
-                        } label: {
-                            Image(systemName: isCalendarCollapsed ? "chevron.down" : "chevron.up")
-                                .font(.subheadline.weight(.semibold))
-                                .padding(6)
-                                .background(Color.gray.opacity(0.15))
-                                .clipShape(Circle())
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel(isCalendarCollapsed ? "カレンダーを開く" : "カレンダーを畳む")
+            MonthCalendarView(
+                viewModel: calendarViewModel,
+                daysOfWeek: daysOfWeek,
+                swipeThreshold: swipeThreshold,
+                targetCalendar: selectedCalendar,
+                showAllCalendars: isMainCalendarSelected,
+                onDayTapped: { date in
+                    if calendarViewModel.selectDate(date) {
+                        isShowingAddSheet = true
                     }
                 }
-                .padding(.horizontal)
-
-                if isCalendarCollapsed {
-                    HStack {
-                        Text(Self.collapsedDateFormatter.string(from: selectedDate))
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundColor(.secondary)
-                            .textCase(nil)
-
-                        Spacer()
-                    }
-                    .padding(.horizontal)
-                    .padding(.vertical, 8)
-                    .background(Color.gray.opacity(0.08))
-                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                    .padding(.horizontal)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            isCalendarCollapsed = false
-                        }
-                    }
-                    .transition(.move(edge: .top).combined(with: .opacity))
-                }
-
-                if !isCalendarCollapsed {
-                    HStack {
-                        ForEach(daysOfWeek, id: \.self) { day in
-                            Text(day).font(.caption).foregroundColor(.gray).frame(
-                                maxWidth: .infinity)
-                        }
-                    }
-
-                    LazyVGrid(
-                        columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 10
-                    ) {
-                        ForEach(0..<currentMonth.startOffset(), id: \.self) { _ in Text("") }
-                        ForEach(currentMonth.getAllDays(), id: \.self) { date in
-                            if let calendar = selectedCalendar {
-                                DayCellView(
-                                    date: date,
-                                    isSelected: Calendar.current.isDate(
-                                        date, inSameDayAs: selectedDate),
-                                    targetCalendar: calendar,
-                                    showAllCalendars: isMainCalendarSelected
-                                )
-                                .onTapGesture { handleDateTap(date) }
-                            }
-                        }
-                    }
-                    .transition(.move(edge: .top).combined(with: .opacity))
-                }
-            }
-            .padding()
-            .contentShape(Rectangle())
-            .simultaneousGesture(
-                DragGesture(minimumDistance: 20, coordinateSpace: .local)
-                    .onEnded { value in
-                        let horizontal = value.translation.width
-                        let vertical = value.translation.height
-
-                        guard abs(horizontal) > abs(vertical) * 1.2 else { return }
-                        guard abs(horizontal) > swipeThreshold else { return }
-
-                        if horizontal < 0 {
-                            changeMonth(by: 1)
-                        } else {
-                            changeMonth(by: -1)
-                        }
-                    }
             )
 
             Divider()
@@ -238,7 +78,8 @@ struct ContentView: View {
             // 3. リスト
             if let calendar = selectedCalendar {
                 TodoListView(
-                    selectedDate: selectedDate, targetCalendar: calendar,
+                    selectedDate: calendarViewModel.selectedDate,
+                    targetCalendar: calendar,
                     showAllCalendars: isMainCalendarSelected)
             } else {
                 ContentUnavailableView("カレンダーを選択", systemImage: "calendar")
@@ -246,9 +87,9 @@ struct ContentView: View {
         }
         .environmentObject(holidayService)
         .task {
-            await holidayService.refreshHolidays(forMonthContaining: currentMonth)
+            await holidayService.refreshHolidays(forMonthContaining: calendarViewModel.currentMonth)
         }
-        .onChange(of: currentMonth) { _, newValue in
+        .onChange(of: calendarViewModel.currentMonth) { _, newValue in
             Task {
                 await holidayService.refreshHolidays(forMonthContaining: newValue)
             }
@@ -256,7 +97,8 @@ struct ContentView: View {
         // タスク追加シート
         .sheet(isPresented: $isShowingAddSheet) {
             if let calendar = selectedCalendar {
-                AddTodoView(selectedDate: selectedDate, targetCalendar: calendar) {
+                AddTodoView(selectedDate: calendarViewModel.selectedDate, targetCalendar: calendar)
+                {
                     title, date, isTimeSet, location, folder in
                     let newItem = TodoItem(
                         title: title,
@@ -267,7 +109,16 @@ struct ContentView: View {
                         folder: folder
                     )
                     modelContext.insert(newItem)
-                    TaskNotificationManager.sync(for: newItem)
+                    Task {
+                        do {
+                            try await TaskNotificationManager.syncThrowing(for: newItem)
+                        } catch {
+                            let presentation = TaskNotificationManager.presentation(for: error)
+                            notificationErrorMessage = presentation.message
+                            canOpenNotificationSettings = presentation.canOpenSettings
+                            isShowingNotificationError = true
+                        }
+                    }
                 }
             }
         }
@@ -284,71 +135,57 @@ struct ContentView: View {
         .alert("新規カレンダー", isPresented: $isShowingNewCalendarAlert) {
             TextField("カレンダー名", text: $newCalendarName)
             Button("作成") {
-                let newCal = AppCalendar(name: newCalendarName)
+                let newCal = AppCalendar(name: newCalendarName, isDefault: false)
                 modelContext.insert(newCal)
                 selectedCalendar = newCal
                 newCalendarName = ""
             }
             Button("キャンセル", role: .cancel) {}
         }
-        .onAppear {
-            if allCalendars.isEmpty {
-                let defaultCal = AppCalendar(name: "メイン")
-                modelContext.insert(defaultCal)
-                selectedCalendar = defaultCal
-            } else if selectedCalendar == nil {
-                selectedCalendar = allCalendars.first
+        .alert("通知", isPresented: $isShowingNotificationError) {
+            if canOpenNotificationSettings {
+                Button("設定を開く") {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        openURL(url)
+                    }
+                }
             }
-
-            currentMonth = startOfMonth(for: currentMonth)
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(notificationErrorMessage)
+        }
+        .onAppear {
+            let defaultCalendar = ensureDefaultCalendarExists()
+            if selectedCalendar == nil {
+                selectedCalendar = defaultCalendar ?? allCalendars.first
+            }
         }
     }
 
-    private func changeMonth(by value: Int) {
-        guard let shifted = Calendar.current.date(byAdding: .month, value: value, to: currentMonth)
-        else { return }
-        let newMonth = startOfMonth(for: shifted)
-
-        withAnimation(.easeInOut(duration: 0.2)) {
-            currentMonth = newMonth
-            selectedDate = adjustedDateInMonth(from: selectedDate, month: newMonth)
+    @discardableResult
+    private func ensureDefaultCalendarExists() -> AppCalendar? {
+        if allCalendars.isEmpty {
+            let defaultCal = AppCalendar(name: "メイン", isDefault: true)
+            modelContext.insert(defaultCal)
+            return defaultCal
         }
-    }
 
-    private func goToToday() {
-        let today = Date()
-        withAnimation(.easeInOut(duration: 0.2)) {
-            currentMonth = startOfMonth(for: today)
-            selectedDate = today
+        let defaults = allCalendars.filter { $0.isDefault }
+        if let firstDefault = defaults.first {
+            // 万一複数立っていたら 1つに正規化
+            for extra in defaults.dropFirst() {
+                extra.isDefault = false
+            }
+            return firstDefault
         }
-    }
 
-    private func handleDateTap(_ date: Date) {
-        let isSameDay = Calendar.current.isDate(date, inSameDayAs: selectedDate)
-
-        selectedDate = date
-        if isSameDay {
-            isShowingAddSheet = true
+        // 既存データ移行: 旧ロジックの "メイン" を優先、なければ先頭をデフォルト化
+        if let legacyMain = allCalendars.first(where: { $0.name == "メイン" }) {
+            legacyMain.isDefault = true
+            return legacyMain
         }
-    }
 
-    private func startOfMonth(for date: Date) -> Date {
-        Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: date))
-            ?? date
-    }
-
-    private func adjustedDateInMonth(from base: Date, month: Date) -> Date {
-        let calendar = Calendar.current
-
-        let baseDay = calendar.component(.day, from: base)
-        let year = calendar.component(.year, from: month)
-        let monthValue = calendar.component(.month, from: month)
-
-        let startOfMonth = startOfMonth(for: month)
-        let daysInMonth = calendar.range(of: .day, in: .month, for: startOfMonth)?.count ?? 28
-
-        let clampedDay = min(max(1, baseDay), daysInMonth)
-        return calendar.date(from: DateComponents(year: year, month: monthValue, day: clampedDay))
-            ?? startOfMonth
+        allCalendars.first?.isDefault = true
+        return allCalendars.first
     }
 }
