@@ -1,0 +1,2 @@
+Target dependency graph (1 target)
+Target 'ToDoカレンダー' in project 'ToDoカレンダー' (no dependencies)

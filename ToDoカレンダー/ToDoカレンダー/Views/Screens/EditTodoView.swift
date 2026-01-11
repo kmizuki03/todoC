@@ -121,8 +121,14 @@ struct EditTodoView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("完了") { dismiss() }
+                    Button("完了") {
+                        TaskNotificationManager.sync(for: item)
+                        dismiss()
+                    }
                 }
+            }
+            .onDisappear {
+                TaskNotificationManager.sync(for: item)
             }
             .alert("新しいタグを作成", isPresented: $isShowingNewFolderAlert) {
                 TextField("タグ名", text: $newFolderName)

@@ -1,0 +1,179 @@
+{
+  "" : {
+    "diagnostics" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/ToDoカレンダー-primary.dia",
+    "emit-module-dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/ToDoカレンダー-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/ToDoカレンダー-primary-emit-module.dia",
+    "pch" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/ToDoカレンダー-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/ToDoカレンダー-primary.swiftdeps"
+  },
+  "/Users/kato/todoC/ToDoカレンダー/ToDoカレンダー/ContentView.swift" : {
+    "const-values" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/ContentView.swiftconstvalues",
+    "dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/ContentView.d",
+    "diagnostics" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/ContentView.dia",
+    "index-unit-output-path" : "/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/ContentView.o",
+    "llvm-bc" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/ContentView.bc",
+    "object" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/ContentView.o",
+    "swift-dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/ContentView.swiftdeps",
+    "swiftmodule" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/ContentView~partial.swiftmodule"
+  },
+  "/Users/kato/todoC/ToDoカレンダー/ToDoカレンダー/Extensions/AppAppearance.swift" : {
+    "const-values" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AppAppearance.swiftconstvalues",
+    "dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AppAppearance.d",
+    "diagnostics" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AppAppearance.dia",
+    "index-unit-output-path" : "/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AppAppearance.o",
+    "llvm-bc" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AppAppearance.bc",
+    "object" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AppAppearance.o",
+    "swift-dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AppAppearance.swiftdeps",
+    "swiftmodule" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AppAppearance~partial.swiftmodule"
+  },
+  "/Users/kato/todoC/ToDoカレンダー/ToDoカレンダー/Extensions/DateExtensions.swift" : {
+    "const-values" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/DateExtensions.swiftconstvalues",
+    "dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/DateExtensions.d",
+    "diagnostics" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/DateExtensions.dia",
+    "index-unit-output-path" : "/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/DateExtensions.o",
+    "llvm-bc" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/DateExtensions.bc",
+    "object" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/DateExtensions.o",
+    "swift-dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/DateExtensions.swiftdeps",
+    "swiftmodule" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/DateExtensions~partial.swiftmodule"
+  },
+  "/Users/kato/todoC/ToDoカレンダー/ToDoカレンダー/Extensions/JapaneseHoliday.swift" : {
+    "const-values" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/JapaneseHoliday.swiftconstvalues",
+    "dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/JapaneseHoliday.d",
+    "diagnostics" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/JapaneseHoliday.dia",
+    "index-unit-output-path" : "/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/JapaneseHoliday.o",
+    "llvm-bc" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/JapaneseHoliday.bc",
+    "object" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/JapaneseHoliday.o",
+    "swift-dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/JapaneseHoliday.swiftdeps",
+    "swiftmodule" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/JapaneseHoliday~partial.swiftmodule"
+  },
+  "/Users/kato/todoC/ToDoカレンダー/ToDoカレンダー/Extensions/TaskNotificationManager.swift" : {
+    "const-values" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TaskNotificationManager.swiftconstvalues",
+    "dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TaskNotificationManager.d",
+    "diagnostics" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TaskNotificationManager.dia",
+    "index-unit-output-path" : "/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TaskNotificationManager.o",
+    "llvm-bc" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TaskNotificationManager.bc",
+    "object" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TaskNotificationManager.o",
+    "swift-dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TaskNotificationManager.swiftdeps",
+    "swiftmodule" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TaskNotificationManager~partial.swiftmodule"
+  },
+  "/Users/kato/todoC/ToDoカレンダー/ToDoカレンダー/Models/AppCalendar.swift" : {
+    "const-values" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AppCalendar.swiftconstvalues",
+    "dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AppCalendar.d",
+    "diagnostics" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AppCalendar.dia",
+    "index-unit-output-path" : "/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AppCalendar.o",
+    "llvm-bc" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AppCalendar.bc",
+    "object" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AppCalendar.o",
+    "swift-dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AppCalendar.swiftdeps",
+    "swiftmodule" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AppCalendar~partial.swiftmodule"
+  },
+  "/Users/kato/todoC/ToDoカレンダー/ToDoカレンダー/Models/Organization.swift" : {
+    "const-values" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/Organization.swiftconstvalues",
+    "dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/Organization.d",
+    "diagnostics" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/Organization.dia",
+    "index-unit-output-path" : "/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/Organization.o",
+    "llvm-bc" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/Organization.bc",
+    "object" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/Organization.o",
+    "swift-dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/Organization.swiftdeps",
+    "swiftmodule" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/Organization~partial.swiftmodule"
+  },
+  "/Users/kato/todoC/ToDoカレンダー/ToDoカレンダー/Models/TodoItem.swift" : {
+    "const-values" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoItem.swiftconstvalues",
+    "dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoItem.d",
+    "diagnostics" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoItem.dia",
+    "index-unit-output-path" : "/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoItem.o",
+    "llvm-bc" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoItem.bc",
+    "object" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoItem.o",
+    "swift-dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoItem.swiftdeps",
+    "swiftmodule" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoItem~partial.swiftmodule"
+  },
+  "/Users/kato/todoC/ToDoカレンダー/ToDoカレンダー/ToDo______App.swift" : {
+    "const-values" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/ToDo______App.swiftconstvalues",
+    "dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/ToDo______App.d",
+    "diagnostics" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/ToDo______App.dia",
+    "index-unit-output-path" : "/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/ToDo______App.o",
+    "llvm-bc" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/ToDo______App.bc",
+    "object" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/ToDo______App.o",
+    "swift-dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/ToDo______App.swiftdeps",
+    "swiftmodule" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/ToDo______App~partial.swiftmodule"
+  },
+  "/Users/kato/todoC/ToDoカレンダー/ToDoカレンダー/Views/Components/DayCellView.swift" : {
+    "const-values" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/DayCellView.swiftconstvalues",
+    "dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/DayCellView.d",
+    "diagnostics" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/DayCellView.dia",
+    "index-unit-output-path" : "/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/DayCellView.o",
+    "llvm-bc" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/DayCellView.bc",
+    "object" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/DayCellView.o",
+    "swift-dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/DayCellView.swiftdeps",
+    "swiftmodule" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/DayCellView~partial.swiftmodule"
+  },
+  "/Users/kato/todoC/ToDoカレンダー/ToDoカレンダー/Views/Components/TodoRowView.swift" : {
+    "const-values" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoRowView.swiftconstvalues",
+    "dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoRowView.d",
+    "diagnostics" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoRowView.dia",
+    "index-unit-output-path" : "/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoRowView.o",
+    "llvm-bc" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoRowView.bc",
+    "object" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoRowView.o",
+    "swift-dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoRowView.swiftdeps",
+    "swiftmodule" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoRowView~partial.swiftmodule"
+  },
+  "/Users/kato/todoC/ToDoカレンダー/ToDoカレンダー/Views/Screens/AddTodoView.swift" : {
+    "const-values" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AddTodoView.swiftconstvalues",
+    "dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AddTodoView.d",
+    "diagnostics" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AddTodoView.dia",
+    "index-unit-output-path" : "/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AddTodoView.o",
+    "llvm-bc" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AddTodoView.bc",
+    "object" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AddTodoView.o",
+    "swift-dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AddTodoView.swiftdeps",
+    "swiftmodule" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/AddTodoView~partial.swiftmodule"
+  },
+  "/Users/kato/todoC/ToDoカレンダー/ToDoカレンダー/Views/Screens/CalendarManagerView.swift" : {
+    "const-values" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/CalendarManagerView.swiftconstvalues",
+    "dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/CalendarManagerView.d",
+    "diagnostics" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/CalendarManagerView.dia",
+    "index-unit-output-path" : "/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/CalendarManagerView.o",
+    "llvm-bc" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/CalendarManagerView.bc",
+    "object" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/CalendarManagerView.o",
+    "swift-dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/CalendarManagerView.swiftdeps",
+    "swiftmodule" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/CalendarManagerView~partial.swiftmodule"
+  },
+  "/Users/kato/todoC/ToDoカレンダー/ToDoカレンダー/Views/Screens/EditTodoView.swift" : {
+    "const-values" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/EditTodoView.swiftconstvalues",
+    "dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/EditTodoView.d",
+    "diagnostics" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/EditTodoView.dia",
+    "index-unit-output-path" : "/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/EditTodoView.o",
+    "llvm-bc" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/EditTodoView.bc",
+    "object" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/EditTodoView.o",
+    "swift-dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/EditTodoView.swiftdeps",
+    "swiftmodule" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/EditTodoView~partial.swiftmodule"
+  },
+  "/Users/kato/todoC/ToDoカレンダー/ToDoカレンダー/Views/Screens/TemplateFolderManagerView.swift" : {
+    "const-values" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TemplateFolderManagerView.swiftconstvalues",
+    "dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TemplateFolderManagerView.d",
+    "diagnostics" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TemplateFolderManagerView.dia",
+    "index-unit-output-path" : "/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TemplateFolderManagerView.o",
+    "llvm-bc" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TemplateFolderManagerView.bc",
+    "object" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TemplateFolderManagerView.o",
+    "swift-dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TemplateFolderManagerView.swiftdeps",
+    "swiftmodule" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TemplateFolderManagerView~partial.swiftmodule"
+  },
+  "/Users/kato/todoC/ToDoカレンダー/ToDoカレンダー/Views/Screens/TodoListView.swift" : {
+    "const-values" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoListView.swiftconstvalues",
+    "dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoListView.d",
+    "diagnostics" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoListView.dia",
+    "index-unit-output-path" : "/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoListView.o",
+    "llvm-bc" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoListView.bc",
+    "object" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoListView.o",
+    "swift-dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoListView.swiftdeps",
+    "swiftmodule" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/TodoListView~partial.swiftmodule"
+  },
+  "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/kato/todoC/ToDoカレンダー/build/ToDoカレンダー.build/Debug-iphoneos/ToDoカレンダー.build/Objects-normal/arm64/GeneratedAssetSymbols~partial.swiftmodule"
+  }
+}

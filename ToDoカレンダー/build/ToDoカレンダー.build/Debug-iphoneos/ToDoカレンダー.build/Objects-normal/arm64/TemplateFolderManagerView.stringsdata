@@ -1,0 +1,144 @@
+{
+  "source": "/Users/kato/todoC/ToDoカレンダー/ToDoカレンダー/Views/Screens/TemplateFolderManagerView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "タグ管理",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 72
+        }
+      },
+      {
+        "comment": "",
+        "key": "エラー",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 103
+        }
+      },
+      {
+        "comment": "",
+        "key": "タグ一覧",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 48
+        }
+      },
+      {
+        "comment": "",
+        "key": "タグがありません",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 50
+        }
+      },
+      {
+        "comment": "",
+        "key": "新しいタグを追加",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 67
+        }
+      },
+      {
+        "comment": "",
+        "key": "閉じる",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 75
+        }
+      },
+      {
+        "comment": "",
+        "key": "OK",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 104
+        }
+      },
+      {
+        "comment": "",
+        "key": "カスタマイズ済み",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 123
+        }
+      },
+      {
+        "comment": "",
+        "key": "名前",
+        "location": {
+          "startingColumn": 25,
+          "startingLine": 228
+        }
+      },
+      {
+        "comment": "",
+        "key": "カラー",
+        "location": {
+          "startingColumn": 25,
+          "startingLine": 237
+        }
+      },
+      {
+        "comment": "",
+        "key": "アイコン",
+        "location": {
+          "startingColumn": 25,
+          "startingLine": 274
+        }
+      },
+      {
+        "comment": "",
+        "key": "プレビュー",
+        "location": {
+          "startingColumn": 25,
+          "startingLine": 299
+        }
+      },
+      {
+        "comment": "",
+        "key": "この名前は既に使用されています",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 231
+        }
+      },
+      {
+        "comment": "",
+        "key": "タグ名",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 229
+        }
+      },
+      {
+        "comment": "",
+        "key": "×",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 246
+        }
+      },
+      {
+        "comment": "",
+        "key": "キャンセル",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 314
+        }
+      },
+      {
+        "comment": "",
+        "key": "保存",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 317
+        }
+      }
+    ]
+  },
+  "version": 1
+}

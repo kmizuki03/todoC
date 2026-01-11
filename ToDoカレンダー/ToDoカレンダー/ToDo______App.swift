@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import Foundation
 
 @main
 struct ToDo_______App: App {
@@ -16,6 +17,10 @@ struct ToDo_______App: App {
         WindowGroup {
             ContentView()
                 .preferredColorScheme(AppAppearance(rawValue: appAppearanceRaw)?.colorScheme)
+                .environment(\.locale, Locale(identifier: "ja_JP"))
+                .task {
+                    await TaskNotificationManager.requestAuthorizationIfNeeded()
+                }
         }
         // TaskList を削除し、3つだけにしました
         .modelContainer(for: [TodoItem.self, TaskFolder.self, AppCalendar.self])

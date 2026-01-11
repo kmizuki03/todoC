@@ -43,7 +43,12 @@ struct TodoListView: View {
             List {
                 // 現存するタグごとのセクション
                 ForEach(uniqueFolders) { folder in
-                    Section(header: FolderHeader(folder: folder)) {
+                    Section {
+                        FolderHeader(folder: folder)
+                            .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 6, trailing: 16))
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Color.clear)
+
                         if !collapsedTagNames.contains(folder.name) {
                             let tasksInFolder = items.filter { $0.folder == folder }
 
@@ -57,7 +62,12 @@ struct TodoListView: View {
 
                 // 削除されたタグ（バックアップ情報で表示）
                 ForEach(orphanedTagNames, id: \.self) { tagName in
-                    Section(header: OrphanedTagHeader(tagName: tagName)) {
+                    Section {
+                        OrphanedTagHeader(tagName: tagName)
+                            .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 6, trailing: 16))
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Color.clear)
+
                         if !collapsedTagNames.contains(tagName) {
                             let tasksWithTag = items.filter { $0.folder == nil && $0.tagName == tagName }
 
@@ -71,7 +81,18 @@ struct TodoListView: View {
 
                 // 未分類のセクション
                 if hasUncategorizedItems {
-                    Section(header: Text("未分類").foregroundColor(.secondary)) {
+                    Section {
+                        Text("未分類")
+                            .foregroundColor(.secondary)
+                            .textCase(nil)
+                            .padding(.vertical, 6)
+                            .padding(.horizontal, 4)
+                            .background(.ultraThinMaterial)
+                            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                            .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 6, trailing: 16))
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Color.clear)
+
                         let uncategorizedTasks = items.filter { $0.folder == nil && $0.tagName == nil }
                         ForEach(uncategorizedTasks) { item in
                             rowView(for: item)
@@ -125,6 +146,10 @@ struct TodoListView: View {
                 .foregroundColor(.gray)
                 .animation(.easeInOut(duration: 0.2), value: collapsedTagNames.contains(folder.name))
         }
+        .padding(.vertical, 6)
+        .padding(.horizontal, 4)
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         .contentShape(Rectangle())
         .onTapGesture {
             withAnimation {
@@ -179,6 +204,10 @@ struct TodoListView: View {
                 .foregroundColor(.gray)
                 .animation(.easeInOut(duration: 0.2), value: collapsedTagNames.contains(tagName))
         }
+        .padding(.vertical, 6)
+        .padding(.horizontal, 4)
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         .contentShape(Rectangle())
         .onTapGesture {
             withAnimation {
@@ -194,10 +223,17 @@ struct TodoListView: View {
     // MARK: - タスク行表示
     private func rowView(for item: TodoItem) -> some View {
         HStack {
-            Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
-                .font(.title2)
-                .foregroundColor(item.isCompleted ? .green : item.displayTagColor)
-                .onTapGesture { withAnimation { item.isCompleted.toggle() } }
+            Button {
+                withAnimation {
+                    item.isCompleted.toggle()
+                }
+                TaskNotificationManager.sync(for: item)
+            } label: {
+                Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
+                    .font(.title2)
+                    .foregroundColor(item.isCompleted ? .green : item.displayTagColor)
+            }
+            .buttonStyle(.plain)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(item.title)
@@ -230,12 +266,25 @@ struct TodoListView: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
             }
-            .contentShape(Rectangle())
-            .onTapGesture { editingItem = item }
 
             Spacer()
         }
         .padding(.vertical, 4)
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+            Button(role: .destructive) {
+                TaskNotificationManager.cancel(for: item)
+                modelContext.delete(item)
+            } label: {
+                Label("削除", systemImage: "trash")
+            }
+
+            Button {
+                editingItem = item
+            } label: {
+                Label("編集", systemImage: "pencil")
+            }
+            .tint(.blue)
+        }
     }
 
     // MARK: - Helpers
@@ -260,7 +309,9 @@ struct TodoListView: View {
     private func deleteItems(at offsets: IndexSet, source: [TodoItem]) {
         withAnimation {
             for index in offsets {
-                modelContext.delete(source[index])
+                let item = source[index]
+                TaskNotificationManager.cancel(for: item)
+                modelContext.delete(item)
             }
         }
     }

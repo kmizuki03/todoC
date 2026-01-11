@@ -1,0 +1,136 @@
+{
+  "source": "/Users/kato/todoC/ToDoカレンダー/ToDoカレンダー/ContentView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "新規カレンダー",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 264
+        }
+      },
+      {
+        "comment": "",
+        "key": "カレンダーを選択",
+        "location": {
+          "startingColumn": 44,
+          "startingLine": 234
+        }
+      },
+      {
+        "comment": "",
+        "key": "＋ カレンダーを追加",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 71
+        }
+      },
+      {
+        "comment": "",
+        "key": "カレンダー管理",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 72
+        }
+      },
+      {
+        "comment": "",
+        "key": "表示: システム",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 81
+        }
+      },
+      {
+        "comment": "",
+        "key": "表示: システム",
+        "location": {
+          "startingColumn": 35,
+          "startingLine": 79
+        }
+      },
+      {
+        "comment": "",
+        "key": "表示: ライト",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 90
+        }
+      },
+      {
+        "comment": "",
+        "key": "表示: ライト",
+        "location": {
+          "startingColumn": 35,
+          "startingLine": 88
+        }
+      },
+      {
+        "comment": "",
+        "key": "表示: ダーク",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 99
+        }
+      },
+      {
+        "comment": "",
+        "key": "表示: ダーク",
+        "location": {
+          "startingColumn": 35,
+          "startingLine": 97
+        }
+      },
+      {
+        "comment": "",
+        "key": "カレンダーを開く",
+        "location": {
+          "startingColumn": 71,
+          "startingLine": 157
+        }
+      },
+      {
+        "comment": "",
+        "key": "カレンダーを畳む",
+        "location": {
+          "startingColumn": 100,
+          "startingLine": 157
+        }
+      },
+      {
+        "comment": "",
+        "key": "",
+        "location": {
+          "startingColumn": 93,
+          "startingLine": 193
+        }
+      },
+      {
+        "comment": "",
+        "key": "カレンダー名",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 265
+        }
+      },
+      {
+        "comment": "",
+        "key": "作成",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 266
+        }
+      },
+      {
+        "comment": "",
+        "key": "キャンセル",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 272
+        }
+      }
+    ]
+  },
+  "version": 1
+}
